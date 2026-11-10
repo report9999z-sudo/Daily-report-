@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Collection Performance Report</title>
     
-    <!-- Firebase SDKs (Optional: Keep if you are using Firebase) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    
     <!-- PDF Generation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
@@ -35,29 +31,27 @@
         .action-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 25px; }
         .btn { padding: 12px; font-size: 16px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; color: white; transition: 0.3s; }
         .pdf-btn { background: #003366; }
-        .db-btn { background: #17a2b8; }
         .copy-btn { background: #25D366; }
 
         /* ========================================= */
-        /* PDF EXPORT STYLES (Matches Your New Image) */
+        /* PDF EXPORT STYLES (Fixed Cut-off Issue) */
         /* ========================================= */
-        #print-area { display: none; background: white; padding: 20px; font-family: 'Segoe UI', sans-serif; color: #002244; }
+        #pdf-wrapper { display: none; width: 100%; overflow: visible; }
+        #print-area { background: white; padding: 30px; font-family: 'Segoe UI', sans-serif; color: #002244; width: 800px; margin: 0 auto; box-sizing: border-box; }
         
         .pdf-title-box { background: #003366; color: white; text-align: center; padding: 12px; border-radius: 8px; font-size: 20px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
-        .pdf-meta { display: flex; justify-content: space-between; border-bottom: 2px solid #003366; padding-bottom: 10px; margin-bottom: 15px; font-size: 15px; font-weight: bold; color: #002244; }
+        .pdf-meta { display: flex; justify-content: space-between; border-bottom: 2px solid #003366; padding-bottom: 10px; margin-bottom: 15px; font-size: 16px; font-weight: bold; color: #002244; }
         
-        .pdf-section-title { background: #003366; color: white; padding: 6px 15px; border-radius: 5px 20px 20px 5px; display: inline-block; font-size: 15px; font-weight: bold; margin-bottom: 15px; }
+        .pdf-section-title { background: #003366; color: white; padding: 8px 15px; border-radius: 5px 20px 20px 5px; display: inline-block; font-size: 16px; font-weight: bold; margin-bottom: 15px; }
         .pdf-section-title i { margin-right: 8px; }
 
-        /* Info Cards Grid */
-        .pdf-cards { display: flex; gap: 10px; margin-bottom: 15px; }
+        .pdf-cards { display: flex; gap: 10px; margin-bottom: 20px; }
         .pdf-card { flex: 1; border: 1px solid #ccc; border-radius: 8px; text-align: center; overflow: hidden; background: white; }
-        .pdf-card i { font-size: 20px; margin-top: 10px; }
-        .pdf-card .val { font-size: 24px; font-weight: bold; padding: 5px 0; }
-        .pdf-card .lbl { color: white; padding: 5px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        .pdf-card i { font-size: 22px; margin-top: 12px; }
+        .pdf-card .val { font-size: 26px; font-weight: bold; padding: 8px 0; }
+        .pdf-card .lbl { color: white; padding: 6px; font-size: 13px; font-weight: bold; text-transform: uppercase; }
         
-        /* Card Colors */
         .c-assigned { border-color: #0056b3; color: #0056b3; background: #e6f2ff; } .c-assigned .lbl { background: #0056b3; }
         .c-completed { border-color: #28a745; color: #28a745; background: #e6ffe6; } .c-completed .lbl { background: #28a745; }
         .c-pending { border-color: #fd7e14; color: #fd7e14; background: #fff3e6; } .c-pending .lbl { background: #fd7e14; }
@@ -65,30 +59,26 @@
         .c-pcr { border-color: #007bff; color: #007bff; background: #e6f7ff; } .c-pcr .lbl { background: #007bff; }
         .c-seizing { border-color: #6f42c1; color: #6f42c1; background: #f2e6ff; } .c-seizing .lbl { background: #6f42c1; }
 
-        /* Progress Bar */
-        .progress-container { background: #e9ecef; border-radius: 5px; border: 1px solid #b3d4fc; padding: 8px 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .progress-text { font-weight: bold; color: #003366; font-size: 15px; white-space: nowrap; }
-        .progress-bar-bg { flex: 1; background: #d3d3d3; height: 12px; border-radius: 10px; overflow: hidden; }
+        .progress-container { background: #e9ecef; border-radius: 5px; border: 1px solid #b3d4fc; padding: 10px 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .progress-text { font-weight: bold; color: #003366; font-size: 16px; white-space: nowrap; }
+        .progress-bar-bg { flex: 1; background: #d3d3d3; height: 14px; border-radius: 10px; overflow: hidden; }
         .progress-bar-fill { background: #28a745; height: 100%; }
 
-        /* Table Styles */
-        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; text-align: center; }
-        .pdf-table th { background: #e6f2ff; color: #003366; padding: 10px; border: 1px solid #b3d4fc; }
-        .pdf-table td { padding: 10px; border: 1px solid #b3d4fc; font-weight: 500; }
+        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 15px; text-align: center; }
+        .pdf-table th { background: #e6f2ff; color: #003366; padding: 12px; border: 1px solid #b3d4fc; }
+        .pdf-table td { padding: 12px; border: 1px solid #b3d4fc; font-weight: 500; }
         .pdf-table .total-row { background: #003366; color: white; font-weight: bold; }
         .pdf-table .total-row td { border-color: #003366; }
 
-        /* Remarks Box */
-        .remarks-box { background: #f8f9fa; border: 1px solid #b3d4fc; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; font-size: 14px; }
+        .remarks-box { background: #f8f9fa; border: 1px solid #b3d4fc; border-radius: 8px; padding: 20px; display: flex; justify-content: space-between; font-size: 15px; page-break-inside: avoid; }
         .remarks-col { flex: 1; }
         .remarks-col ul { list-style: none; padding: 0; margin: 0; }
-        .remarks-col li { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
-        .remarks-col li i { color: #003366; margin-top: 3px; }
+        .remarks-col li { margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
+        .remarks-col li i { color: #003366; margin-top: 4px; }
     </style>
 </head>
 <body>
 
-    <!-- Main Input Form -->
     <div class="container" id="main-form">
         <div class="header-title">
             <h2>Performance Report Entry</h2>
@@ -101,12 +91,12 @@
 
         <h3>1. Daily Summary</h3>
         <div class="row">
-            <div class="col"><label>Accounts Assigned:</label><input type="number" id="assigned" oninput="updatePending()"></div>
-            <div class="col"><label>Accounts Completed:</label><input type="number" id="completed" oninput="updatePending()"></div>
+            <div class="col"><label>Assigned:</label><input type="number" id="assigned" oninput="updatePending()"></div>
+            <div class="col"><label>Completed:</label><input type="number" id="completed" oninput="updatePending()"></div>
             <div class="col"><label>Pending:</label><input type="number" id="pending" readonly style="background:#e9ecef;"></div>
         </div>
 
-        <h3>2. Collection Details (Add Accounts)</h3>
+        <h3>2. Collection Details</h3>
         <div class="section-box">
             <label>1. LOCK AMOUNT</label>
             <div id="lock-container"></div>
@@ -135,12 +125,13 @@
 
         <div class="action-btns">
             <button class="btn pdf-btn" onclick="generateAdvancedPDF()">📄 Download Official PDF</button>
-            <button class="btn copy-btn" onclick="copyToWhatsApp()">📋 Copy for WhatsApp</button>
         </div>
     </div>
 
-    <!-- Hidden Layout specifically for Graphic PDF generation -->
-    <div id="print-area"></div>
+    <!-- Hidden Wrapper for PDF (Forces fixed width to avoid cut-offs) -->
+    <div id="pdf-wrapper">
+        <div id="print-area"></div>
+    </div>
 
     <script>
         document.getElementById('date').valueAsDate = new Date();
@@ -177,7 +168,6 @@
             document.getElementById(containerId).appendChild(div);
         }
 
-        // Helper function to extract data from rows
         function extractData(category, hasAmount) {
             let rows = document.querySelectorAll(`.${category}-row`);
             let count = rows.length;
@@ -187,24 +177,17 @@
             rows.forEach(row => {
                 let accNo = row.querySelector('.acc-no').value || "";
                 if(accNo) accounts.push(accNo);
-                
                 if (hasAmount) {
                     let val = parseFloat(row.querySelector('.acc-val').value) || 0;
                     totalAmount += val;
                 }
             });
 
-            return { 
-                count: count, 
-                amount: totalAmount, 
-                accountsStr: accounts.length > 0 ? accounts.join(", ") : "Nil" 
-            };
+            return { count: count, amount: totalAmount, accountsStr: accounts.length > 0 ? accounts.join(", ") : "Nil" };
         }
 
         function generateAdvancedPDF() {
-            // 1. Gather Basic Info
             let date = document.getElementById('date').value;
-            // Format date to DD-MM-YYYY
             let dateParts = date.split('-');
             let formattedDate = dateParts.length === 3 ? `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}` : date;
             
@@ -215,7 +198,6 @@
             
             let completionRate = assigned > 0 ? ((completed / assigned) * 100).toFixed(2) : "0.00";
 
-            // 2. Gather Row Data
             let lockData = extractData('lock', true);
             let pcrData = extractData('pcr', true);
             let qrData = extractData('qr', true);
@@ -225,8 +207,9 @@
             let totalAccountsHandled = lockData.count + pcrData.count + qrData.count + othersData.count;
             let grandTotalAmount = lockData.amount + pcrData.amount + qrData.amount;
 
-            // 3. Build the HTML Structure dynamically inside print-area
             let printArea = document.getElementById('print-area');
+            let pdfWrapper = document.getElementById('pdf-wrapper');
+            
             printArea.innerHTML = `
                 <div class="pdf-title-box">DAILY COLLECTION & SEIZING PERFORMANCE REPORT</div>
                 
@@ -238,80 +221,28 @@
                 <div class="pdf-section-title"><i class="fa-solid fa-chart-line"></i> 1. Daily Performance Summary</div>
                 
                 <div class="pdf-cards">
-                    <div class="pdf-card c-assigned">
-                        <i class="fa-solid fa-users"></i>
-                        <div class="val">${assigned < 10 ? '0'+assigned : assigned}</div>
-                        <div class="lbl">Assigned</div>
-                    </div>
-                    <div class="pdf-card c-completed">
-                        <i class="fa-solid fa-circle-check"></i>
-                        <div class="val">${completed < 10 ? '0'+completed : completed}</div>
-                        <div class="lbl">Completed</div>
-                    </div>
-                    <div class="pdf-card c-pending">
-                        <i class="fa-regular fa-clock"></i>
-                        <div class="val">${pending < 10 ? '0'+pending : pending}</div>
-                        <div class="lbl">Pending</div>
-                    </div>
-                    <div class="pdf-card c-lock">
-                        <i class="fa-solid fa-lock"></i>
-                        <div class="val">${lockData.count < 10 ? '0'+lockData.count : lockData.count}</div>
-                        <div class="lbl">Lock</div>
-                    </div>
-                    <div class="pdf-card c-pcr">
-                        <i class="fa-solid fa-file-invoice"></i>
-                        <div class="val">${pcrData.count < 10 ? '0'+pcrData.count : pcrData.count}</div>
-                        <div class="lbl">PCR</div>
-                    </div>
-                    <div class="pdf-card c-seizing">
-                        <i class="fa-solid fa-gavel"></i>
-                        <div class="val">${seizingData.count < 10 ? '0'+seizingData.count : seizingData.count}</div>
-                        <div class="lbl">Seizing</div>
-                    </div>
+                    <div class="pdf-card c-assigned"><i class="fa-solid fa-users"></i><div class="val">${assigned < 10 ? '0'+assigned : assigned}</div><div class="lbl">Assigned</div></div>
+                    <div class="pdf-card c-completed"><i class="fa-solid fa-circle-check"></i><div class="val">${completed < 10 ? '0'+completed : completed}</div><div class="lbl">Completed</div></div>
+                    <div class="pdf-card c-pending"><i class="fa-regular fa-clock"></i><div class="val">${pending < 10 ? '0'+pending : pending}</div><div class="lbl">Pending</div></div>
+                    <div class="pdf-card c-lock"><i class="fa-solid fa-lock"></i><div class="val">${lockData.count < 10 ? '0'+lockData.count : lockData.count}</div><div class="lbl">Lock</div></div>
+                    <div class="pdf-card c-pcr"><i class="fa-solid fa-file-invoice"></i><div class="val">${pcrData.count < 10 ? '0'+pcrData.count : pcrData.count}</div><div class="lbl">PCR</div></div>
+                    <div class="pdf-card c-seizing"><i class="fa-solid fa-gavel"></i><div class="val">${seizingData.count < 10 ? '0'+seizingData.count : seizingData.count}</div><div class="lbl">Seizing</div></div>
                 </div>
 
                 <div class="progress-container">
                     <div class="progress-text">Completion Rate | ${completionRate}%</div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" style="width: ${completionRate}%;"></div>
-                    </div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${completionRate}%;"></div></div>
                 </div>
 
                 <div class="pdf-section-title"><i class="fa-solid fa-sack-dollar"></i> 2. Financial Performance</div>
                 <table class="pdf-table">
-                    <thead>
-                        <tr>
-                            <th>Category</th>
-                            <th>Account No.</th>
-                            <th>Amount (₹)</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Category</th><th>Account No.</th><th>Amount (₹)</th></tr></thead>
                     <tbody>
-                        <tr>
-                            <td style="text-align:left;">Lock</td>
-                            <td>${lockData.accountsStr}</td>
-                            <td>₹ ${lockData.amount.toLocaleString('en-IN')}</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left;">PCR</td>
-                            <td>${pcrData.accountsStr}</td>
-                            <td>₹ ${pcrData.amount.toLocaleString('en-IN')}</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left;">QR</td>
-                            <td>${qrData.accountsStr}</td>
-                            <td>₹ ${qrData.amount.toLocaleString('en-IN')}</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left;">Office / Others</td>
-                            <td>${othersData.accountsStr}</td>
-                            <td>₹ 0</td>
-                        </tr>
-                        <tr class="total-row">
-                            <td style="text-align:left;">Total</td>
-                            <td>${totalAccountsHandled < 10 ? '0'+totalAccountsHandled : totalAccountsHandled}</td>
-                            <td>₹ ${grandTotalAmount.toLocaleString('en-IN')}</td>
-                        </tr>
+                        <tr><td style="text-align:left;">Lock</td><td>${lockData.accountsStr}</td><td>₹ ${lockData.amount.toLocaleString('en-IN')}</td></tr>
+                        <tr><td style="text-align:left;">PCR</td><td>${pcrData.accountsStr}</td><td>₹ ${pcrData.amount.toLocaleString('en-IN')}</td></tr>
+                        <tr><td style="text-align:left;">QR</td><td>${qrData.accountsStr}</td><td>₹ ${qrData.amount.toLocaleString('en-IN')}</td></tr>
+                        <tr><td style="text-align:left;">Office / Others</td><td>${othersData.accountsStr}</td><td>₹ 0</td></tr>
+                        <tr class="total-row"><td style="text-align:left;">Total</td><td>${totalAccountsHandled < 10 ? '0'+totalAccountsHandled : totalAccountsHandled}</td><td>₹ ${grandTotalAmount.toLocaleString('en-IN')}</td></tr>
                     </tbody>
                 </table>
 
@@ -334,27 +265,23 @@
                 </div>
             `;
 
-            // 4. Generate PDF
+            // Display wrapper explicitly for html2canvas to capture full height
             document.getElementById('main-form').style.display = 'none';
-            printArea.style.display = 'block';
+            pdfWrapper.style.display = 'block';
 
             let opt = {
                 margin:       10,
                 filename:     `${name}_Report_${formattedDate}.pdf`,
                 image:        { type: 'jpeg', quality: 1.0 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: 'avoid-all' }
             };
 
             html2pdf().set(opt).from(printArea).save().then(() => {
-                printArea.style.display = 'none';
+                pdfWrapper.style.display = 'none';
                 document.getElementById('main-form').style.display = 'block';
             });
-        }
-        
-        // Basic WhatsApp Copy function (Kept intact from previous code)
-        function copyToWhatsApp() {
-            alert("This design is highly optimized for PDF. The text version remains simple.");
         }
     </script>
 </body>
