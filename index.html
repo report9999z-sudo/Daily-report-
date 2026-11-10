@@ -36,11 +36,18 @@
         .db-btn { background: #0056b3; }
         .copy-btn { background: #25D366; }
         .pdf-btn { background: #dc3545; }
+        
+        /* PDF specific styles */
+        #print-area { display: none; background: white; padding: 10px; font-family: Arial, sans-serif; color: black; }
+        .pdf-section-title { background: #eee; padding: 5px 8px; margin-bottom: 5px; border-left: 3px solid #800000; font-size: 14px; font-weight: bold; }
+        .pdf-list { margin-top: 0; padding-left: 20px; font-size: 13px; margin-bottom: 10px; }
+        .pdf-list li { margin-bottom: 3px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <!-- Main Entry Form -->
+    <div class="container" id="main-form">
         <div class="header-title">
             <h1>Sri Vishnu Priya Finance</h1>
             <h2>Daily Collection & Seizing Report</h2>
@@ -102,6 +109,9 @@
             <button class="btn copy-btn" onclick="copyToWhatsApp()">📋 Copy for WhatsApp</button>
         </div>
     </div>
+
+    <!-- Hidden Layout specifically for PDF generation -->
+    <div id="print-area"></div>
 
     <script>
         // Firebase Configuration
@@ -244,7 +254,7 @@
 
         // --- PDF Generation ---
         function getPDFSectionHTML(category, title, hasAmount) {
-            let html = `<h4 style="background:#eee; padding:5px; margin-bottom:5px; border-left: 3px solid #800000;">${title}</h4><ul style="margin-top:0; padding-left: 20px; font-size:14px;">`;
+            let html = `<div class="pdf-section-title">${title}</div><ul class="pdf-list">`;
             let rows = document.querySelectorAll(`.${category}-row`);
             let total = 0;
             if(rows.length === 0) return html + `<li>Nil</li></ul>`;
@@ -260,7 +270,7 @@
                 }
             });
             html += `</ul>`;
-            if (hasAmount) html += `<p style="margin-top: -5px; padding-left: 20px; font-weight: bold;">Total: ₹${total}</p>`;
+            if (hasAmount) html += `<div style="margin-top: -5px; padding-left: 20px; font-weight: bold; font-size: 13px; margin-bottom: 10px;">Total: ₹${total}</div>`;
             return html;
         }
 
@@ -268,24 +278,24 @@
             let date = document.getElementById('date').value;
             let name = document.getElementById('name').value || "Executive";
             
-            // Build Official Layout HTML dynamically
-            let pdfContent = `
-            <div style="padding: 30px; font-family: Arial, sans-serif; color: #333;">
+            // Populate the static hidden div with current values
+            let printArea = document.getElementById('print-area');
+            printArea.innerHTML = `
                 <div style="text-align: center; border-bottom: 2px solid #800000; padding-bottom: 10px; margin-bottom: 20px;">
-                    <h1 style="color: #800000; margin: 0; font-size: 26px;">SRI VISHNU PRIYA FINANCE</h1>
-                    <h3 style="margin: 5px 0 0 0; color: #555;">Daily Collection & Seizing Report</h3>
+                    <h1 style="color: #800000; margin: 0; font-size: 24px;">SRI VISHNU PRIYA FINANCE</h1>
+                    <h3 style="margin: 5px 0 0 0; color: #555; font-size: 15px;">Daily Collection & Seizing Report</h3>
                 </div>
                 
-                <table style="width: 100%; margin-bottom: 20px; font-size: 15px;">
+                <table style="width: 100%; margin-bottom: 15px; font-size: 14px;">
                     <tr>
                         <td><strong>Date:</strong> ${date}</td>
                         <td style="text-align: right;"><strong>Executive Name:</strong> ${name}</td>
                     </tr>
                 </table>
 
-                <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; background: #f9f9f9;">
+                <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; background: #f9f9f9;">
                     <h4 style="margin: 0 0 10px 0; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Daily Summary</h4>
-                    <table style="width: 100%; font-size: 14px;">
+                    <table style="width: 100%; font-size: 13px;">
                         <tr>
                             <td>Assigned: <b>${document.getElementById('assigned').value || 0}</b></td>
                             <td>Completed: <b>${document.getElementById('completed').value || 0}</b></td>
@@ -314,26 +324,25 @@
                     <p style="margin-bottom: 5px;">_______________________</p>
                     <p style="margin-top: 0; font-size: 14px; padding-right: 20px;">Signature</p>
                 </div>
-            </div>`;
+            `;
 
-            // Create a temporary hidden div
-            let tempDiv = document.createElement('div');
-            tempDiv.innerHTML = pdfContent;
-            document.body.appendChild(tempDiv);
+            // Hide main form and show print area so the library can capture it perfectly
+            document.getElementById('main-form').style.display = 'none';
+            printArea.style.display = 'block';
 
-            // PDF Options
             let fileName = name + "_Report_" + date + ".pdf";
             let opt = {
                 margin:       10,
                 filename:     fileName,
-                image:        { type: 'jpeg', quality: 0.98 },
+                image:        { type: 'jpeg', quality: 1.0 },
                 html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Generate and save PDF, then remove the temp div
-            html2pdf().set(opt).from(tempDiv).save().then(() => {
-                document.body.removeChild(tempDiv);
+            // Generate PDF and then restore the screen
+            html2pdf().set(opt).from(printArea).save().then(() => {
+                printArea.style.display = 'none';
+                document.getElementById('main-form').style.display = 'block';
             });
         }
     </script>
