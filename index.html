@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sri Vishnu Priya Finance - Collection Report</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <!-- PDF Generation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body { font-family: Arial, sans-serif; padding: 10px; background-color: #f4f7f6; margin: 0; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
+        .header-title { text-align: center; margin-bottom: 20px; }
+        .header-title h1 { color: #800000; font-size: 22px; margin: 0; text-transform: uppercase; }
+        .header-title h2 { color: #333; font-size: 16px; margin: 5px 0 0 0; }
+        
+        h3 { background-color: #0056b3; color: white; padding: 8px; border-radius: 4px; font-size: 15px; margin-top: 20px; }
+        label { font-weight: bold; font-size: 13px; color: #555; display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 10px; margin-top: 4px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .col { flex: 1; }
+        
+        .section-box { border: 1px solid #ddd; padding: 10px; border-radius: 5px; margin-bottom: 15px; background: #fafafa; }
+        .entry-row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; background: white; padding: 5px; border: 1px solid #eee; border-radius: 4px; }
+        .entry-row input, .entry-row select { margin-top: 0; padding: 8px; font-size: 12px; }
+        .remove-btn { background: #dc3545; color: white; border: none; padding: 8px 10px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        .add-btn { background: #28a745; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-size: 13px; margin-top: 5px; }
+        
+        .action-btns { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .btn { padding: 12px; font-size: 16px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; color: white; }
+        .db-btn { background: #0056b3; }
+        .copy-btn { background: #25D366; }
+        .pdf-btn { background: #dc3545; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-title">
+            <h1>Sri Vishnu Priya Finance</h1>
+            <h2>Daily Collection & Seizing Report</h2>
+        </div>
+        
+        <div class="row">
+            <div class="col"><label>Date:</label><input type="date" id="date"></div>
+            <div class="col"><label>Executive Name:</label><input type="text" id="name" placeholder="Enter Name"></div>
+        </div>
+
+        <h3>1. Daily Summary</h3>
+        <div class="row">
+            <div class="col"><label>Accounts Assigned:</label><input type="number" id="assigned"></div>
+            <div class="col"><label>Accounts Completed:</label><input type="number" id="completed"></div>
+        </div>
+        <div class="row">
+            <div class="col"><label>LOCK Count:</label><input type="number" id="lock-count"></div>
+            <div class="col"><label>PCR Count:</label><input type="number" id="pcr-count"></div>
+        </div>
+        <div class="row">
+            <div class="col"><label>QR Count:</label><input type="number" id="qr-count"></div>
+            <div class="col"><label>OFFICE / OTHERS:</label><input type="number" id="others-count"></div>
+        </div>
+        <div class="row">
+            <div class="col"><label>SEIZING Count:</label><input type="number" id="seizing-count"></div>
+        </div>
+
+        <h3>2. Collection Details</h3>
+        
+        <div class="section-box">
+            <label>1. LOCK AMOUNT</label>
+            <div id="lock-container"></div>
+            <button class="add-btn" onclick="addAmountRow('lock-container', 'lock')">+ Add Account</button>
+        </div>
+        <div class="section-box">
+            <label>2. PCR</label>
+            <div id="pcr-container"></div>
+            <button class="add-btn" onclick="addAmountRow('pcr-container', 'pcr')">+ Add Account</button>
+        </div>
+        <div class="section-box">
+            <label>3. QR</label>
+            <div id="qr-container"></div>
+            <button class="add-btn" onclick="addAmountRow('qr-container', 'qr')">+ Add Account</button>
+        </div>
+        <div class="section-box">
+            <label>4. OFFICE / OTHERS</label>
+            <div id="others-container"></div>
+            <button class="add-btn" onclick="addStatusRow('others-container', 'others')">+ Add Account</button>
+        </div>
+        <div class="section-box">
+            <label>5. SEIZING</label>
+            <div id="seizing-container"></div>
+            <button class="add-btn" onclick="addSeizingRow('seizing-container', 'seizing')">+ Add Account</button>
+        </div>
+
+        <div class="action-btns">
+            <button class="btn pdf-btn" onclick="downloadOfficialPDF()">📄 Download Official PDF</button>
+            <button class="btn db-btn" onclick="saveToDatabase()">☁️ Save to Database</button>
+            <button class="btn copy-btn" onclick="copyToWhatsApp()">📋 Copy for WhatsApp</button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            appId: "1:184676228358:android:7ef47b55ab678bb0dfd287"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const database = firebase.database();
+
+        document.getElementById('date').valueAsDate = new Date();
+
+        function createSelectHTML() {
+            return `<select class="acc-type"><option value="Regular">Regular</option><option value="Matured">Matured</option></select>`;
+        }
+
+        function addAmountRow(containerId, category) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `entry-row ${category}-row`;
+            div.innerHTML = `
+                <input type="text" placeholder="Acc No" class="acc-no">
+                <input type="number" placeholder="Amount (₹)" class="acc-val">
+                ${createSelectHTML()}
+                <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function addStatusRow(containerId, category) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `entry-row ${category}-row`;
+            div.innerHTML = `
+                <input type="text" placeholder="Acc No" class="acc-no">
+                <input type="text" placeholder="Status" class="acc-val">
+                ${createSelectHTML()}
+                <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function addSeizingRow(containerId, category) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `entry-row ${category}-row`;
+            div.innerHTML = `
+                <input type="text" placeholder="Acc No" class="acc-no">
+                ${createSelectHTML()}
+                <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // --- Save To Database ---
+        function getSectionData(category, hasAmount) {
+            let data = [];
+            document.querySelectorAll(`.${category}-row`).forEach(row => {
+                let accNo = row.querySelector('.acc-no').value || "";
+                if (accNo === "") return;
+                let obj = { accNo: accNo, type: row.querySelector('.acc-type').value };
+                if (category !== 'seizing') obj.value = row.querySelector('.acc-val').value || "";
+                data.push(obj);
+            });
+            return data;
+        }
+
+        function saveToDatabase() {
+            let execName = document.getElementById('name').value;
+            let reportDate = document.getElementById('date').value;
+            if (!execName) { alert("Please enter Executive Name before saving."); return; }
+
+            let reportData = {
+                date: reportDate, executiveName: execName,
+                summary: {
+                    assigned: document.getElementById('assigned').value || 0,
+                    completed: document.getElementById('completed').value || 0,
+                    lockCount: document.getElementById('lock-count').value || 0,
+                    pcrCount: document.getElementById('pcr-count').value || 0,
+                    qrCount: document.getElementById('qr-count').value || 0,
+                    othersCount: document.getElementById('others-count').value || 0,
+                    seizingCount: document.getElementById('seizing-count').value || 0
+                },
+                details: {
+                    lock: getSectionData('lock', true),
+                    pcr: getSectionData('pcr', true),
+                    qr: getSectionData('qr', true),
+                    others: getSectionData('others', false),
+                    seizing: getSectionData('seizing', false)
+                },
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            database.ref('DailyReports/' + reportDate + '/' + execName).set(reportData)
+            .then(() => alert("Report successfully saved to Database!"))
+            .catch((error) => alert("Error: " + error.message));
+        }
+
+        // --- WhatsApp Copy ---
+        function getWhatsAppSectionText(category, title, hasAmount) {
+            let text = `*${title}:*\n`;
+            let rows = document.querySelectorAll(`.${category}-row`);
+            let total = 0;
+            if(rows.length === 0) return text + "Nil\n\n";
+            rows.forEach(row => {
+                let accNo = row.querySelector('.acc-no').value || "-";
+                let type = row.querySelector('.acc-type').value;
+                if (category === 'seizing') {
+                    text += `• ${accNo} (${type})\n`;
+                } else {
+                    let val = row.querySelector('.acc-val').value || "0";
+                    text += `• ${accNo} - ${hasAmount ? '₹' + val : val} (${type})\n`;
+                    if(hasAmount) total += parseFloat(val) || 0;
+                }
+            });
+            if (hasAmount) text += `_(Total: ₹${total})_\n\n`; else text += `\n`;
+            return text;
+        }
+
+        function copyToWhatsApp() {
+            let date = document.getElementById('date').value;
+            let name = document.getElementById('name').value;
+            let report = `🏢 *SRI VISHNU PRIYA FINANCE*\n📅 *Date:* ${date}\n👤 *Executive:* ${name}\n\n`;
+            report += `📊 *--- DAILY SUMMARY ---* 📊\n`;
+            report += `Assigned: ${document.getElementById('assigned').value || 0} | Completed: ${document.getElementById('completed').value || 0}\n\n`;
+            report += `LOCK: ${document.getElementById('lock-count').value || 0} | PCR: ${document.getElementById('pcr-count').value || 0}\n`;
+            report += `QR: ${document.getElementById('qr-count').value || 0} | OTHERS: ${document.getElementById('others-count').value || 0}\n`;
+            report += `SEIZING: ${document.getElementById('seizing-count').value || 0}\n\n`;
+            report += `📝 *--- COLLECTION DETAILS ---* 📝\n\n`;
+            report += getWhatsAppSectionText('lock', '1. LOCK AMOUNT', true);
+            report += getWhatsAppSectionText('pcr', '2. PCR', true);
+            report += getWhatsAppSectionText('qr', '3. QR', true);
+            report += getWhatsAppSectionText('others', '4. OFFICE / OTHERS', false);
+            report += getWhatsAppSectionText('seizing', '5. SEIZING', false);
+            navigator.clipboard.writeText(report).then(() => alert("Copied! Paste in WhatsApp group."));
+        }
+
+        // --- PDF Generation ---
+        function getPDFSectionHTML(category, title, hasAmount) {
+            let html = `<h4 style="background:#eee; padding:5px; margin-bottom:5px; border-left: 3px solid #800000;">${title}</h4><ul style="margin-top:0; padding-left: 20px; font-size:14px;">`;
+            let rows = document.querySelectorAll(`.${category}-row`);
+            let total = 0;
+            if(rows.length === 0) return html + `<li>Nil</li></ul>`;
+            rows.forEach(row => {
+                let accNo = row.querySelector('.acc-no').value || "-";
+                let type = row.querySelector('.acc-type').value;
+                if (category === 'seizing') {
+                    html += `<li><strong>${accNo}</strong> <i>(${type})</i></li>`;
+                } else {
+                    let val = row.querySelector('.acc-val').value || "0";
+                    html += `<li><strong>${accNo}</strong> - ${hasAmount ? '₹'+val : val} <i>(${type})</i></li>`;
+                    if(hasAmount) total += parseFloat(val) || 0;
+                }
+            });
+            html += `</ul>`;
+            if (hasAmount) html += `<p style="margin-top: -5px; padding-left: 20px; font-weight: bold;">Total: ₹${total}</p>`;
+            return html;
+        }
+
+        function downloadOfficialPDF() {
+            let date = document.getElementById('date').value;
+            let name = document.getElementById('name').value || "Executive";
+            
+            // Build Official Layout HTML dynamically
+            let pdfContent = `
+            <div style="padding: 30px; font-family: Arial, sans-serif; color: #333;">
+                <div style="text-align: center; border-bottom: 2px solid #800000; padding-bottom: 10px; margin-bottom: 20px;">
+                    <h1 style="color: #800000; margin: 0; font-size: 26px;">SRI VISHNU PRIYA FINANCE</h1>
+                    <h3 style="margin: 5px 0 0 0; color: #555;">Daily Collection & Seizing Report</h3>
+                </div>
+                
+                <table style="width: 100%; margin-bottom: 20px; font-size: 15px;">
+                    <tr>
+                        <td><strong>Date:</strong> ${date}</td>
+                        <td style="text-align: right;"><strong>Executive Name:</strong> ${name}</td>
+                    </tr>
+                </table>
+
+                <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; background: #f9f9f9;">
+                    <h4 style="margin: 0 0 10px 0; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Daily Summary</h4>
+                    <table style="width: 100%; font-size: 14px;">
+                        <tr>
+                            <td>Assigned: <b>${document.getElementById('assigned').value || 0}</b></td>
+                            <td>Completed: <b>${document.getElementById('completed').value || 0}</b></td>
+                            <td>LOCK: <b>${document.getElementById('lock-count').value || 0}</b></td>
+                        </tr>
+                        <tr>
+                            <td>PCR: <b>${document.getElementById('pcr-count').value || 0}</b></td>
+                            <td>QR: <b>${document.getElementById('qr-count').value || 0}</b></td>
+                            <td>OTHERS: <b>${document.getElementById('others-count').value || 0}</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding-top: 5px;">SEIZING: <b>${document.getElementById('seizing-count').value || 0}</b></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div>
+                    ${getPDFSectionHTML('lock', '1. LOCK AMOUNT', true)}
+                    ${getPDFSectionHTML('pcr', '2. PCR', true)}
+                    ${getPDFSectionHTML('qr', '3. QR', true)}
+                    ${getPDFSectionHTML('others', '4. OFFICE / OTHERS', false)}
+                    ${getPDFSectionHTML('seizing', '5. SEIZING', false)}
+                </div>
+                
+                <div style="margin-top: 40px; text-align: right;">
+                    <p style="margin-bottom: 5px;">_______________________</p>
+                    <p style="margin-top: 0; font-size: 14px; padding-right: 20px;">Signature</p>
+                </div>
+            </div>`;
+
+            // Create a temporary hidden div
+            let tempDiv = document.createElement('div');
+            tempDiv.innerHTML = pdfContent;
+            document.body.appendChild(tempDiv);
+
+            // PDF Options
+            let fileName = name + "_Report_" + date + ".pdf";
+            let opt = {
+                margin:       10,
+                filename:     fileName,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Generate and save PDF, then remove the temp div
+            html2pdf().set(opt).from(tempDiv).save().then(() => {
+                document.body.removeChild(tempDiv);
+            });
+        }
+    </script>
+</body>
+</html>
