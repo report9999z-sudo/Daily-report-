@@ -4,210 +4,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Executive Collection Entry</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #eef2f7; margin: 0; padding: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; margin: 0; padding: 10px; }
         .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         h2 { color: #003366; text-align: center; border-bottom: 2px solid #ccc; padding-bottom: 10px; }
-        h3 { background: #0056b3; color: white; padding: 10px; border-radius: 5px; font-size: 15px; margin-top: 20px; }
         label { font-weight: bold; font-size: 13px; color: #444; display: block; margin-top: 10px; }
         input, select { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 5px; font-size: 14px; }
-        .row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .col { flex: 1; }
-        .section-box { border: 1px solid #dee2e6; padding: 10px; border-radius: 8px; margin-bottom: 15px; background: #f8f9fa; }
-        .entry-row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
-        .entry-row input, .entry-row select { padding: 8px; font-size: 12px; margin-top:0;}
-        .remove-btn { background: #dc3545; color: white; border: none; padding: 8px 10px; cursor: pointer; border-radius: 5px; font-weight: bold; }
         .btn { padding: 12px; font-size: 15px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; color: white; width: 100%; margin-top: 15px;}
-        .btn-blue { background: #003366; }
-        .btn-green { background: #28a745; }
-
+        .btn-blue { background: #003366; } .btn-green { background: #28a745; }
+        
+        .acc-card { background: #f8f9fa; border: 1px solid #b3d4fc; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+        .acc-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 15px; color: #003366; margin-bottom: 5px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;}
+        .acc-row { display: flex; gap: 10px; }
+        
         /* PDF STYLES */
-        #pdf-wrapper { display: none; width: 100%; overflow: visible; }
-        #print-area { background: white; padding: 30px; font-family: 'Segoe UI', sans-serif; color: #002244; width: 794px; margin: 0 auto; box-sizing: border-box; }
+        #pdf-wrapper { display: none; }
+        #print-area { background: white; padding: 30px; font-family: 'Segoe UI', sans-serif; color: #002244; width: 800px; margin: 0 auto; box-sizing: border-box; }
         .pdf-title-box { background: #003366; color: white; text-align: center; padding: 12px; border-radius: 8px; font-size: 20px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
-        .pdf-meta { display: flex; justify-content: space-between; border-bottom: 2px solid #003366; padding-bottom: 10px; margin-bottom: 15px; font-size: 16px; font-weight: bold; }
-        .pdf-section-title { background: #003366; color: white; padding: 8px 15px; border-radius: 5px 20px 20px 5px; display: inline-block; font-size: 15px; font-weight: bold; margin-bottom: 15px; }
-        .pdf-cards { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; }
-        .pdf-card { flex: 1; border: 1px solid #ccc; border-radius: 8px; text-align: center; overflow: hidden; background: white; min-width: 0; }
-        .pdf-card i { font-size: 20px; margin-top: 10px; }
-        .pdf-card .val { font-size: 22px; font-weight: bold; padding: 5px 0; }
-        .pdf-card .lbl { color: white; padding: 5px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .c-assigned { border-color: #0056b3; color: #0056b3; background: #e6f2ff; } .c-assigned .lbl { background: #0056b3; }
-        .c-completed { border-color: #28a745; color: #28a745; background: #e6ffe6; } .c-completed .lbl { background: #28a745; }
-        .c-pending { border-color: #fd7e14; color: #fd7e14; background: #fff3e6; } .c-pending .lbl { background: #fd7e14; }
-        .c-lock { border-color: #002244; color: #002244; background: #e6e9f0; } .c-lock .lbl { background: #002244; }
-        .c-pcr { border-color: #007bff; color: #007bff; background: #e6f7ff; } .c-pcr .lbl { background: #007bff; }
-        .c-seizing { border-color: #6f42c1; color: #6f42c1; background: #f2e6ff; } .c-seizing .lbl { background: #6f42c1; }
-        .progress-container { background: #e9ecef; border-radius: 5px; border: 1px solid #b3d4fc; padding: 10px; display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .progress-bar-bg { flex: 1; background: #d3d3d3; height: 12px; border-radius: 10px; overflow: hidden; }
-        .progress-bar-fill { background: #28a745; height: 100%; }
+        .pdf-section-title { background: #003366; color: white; padding: 8px 15px; border-radius: 5px 20px 20px 5px; display: inline-block; font-size: 15px; font-weight: bold; margin-bottom: 10px; }
         .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; text-align: center; }
         .pdf-table th { background: #e6f2ff; color: #003366; padding: 10px; border: 1px solid #b3d4fc; }
-        .pdf-table td { padding: 10px; border: 1px solid #b3d4fc; font-weight: 500; vertical-align: middle; line-height: 1.6; }
+        .pdf-table td { padding: 10px; border: 1px solid #b3d4fc; vertical-align: middle; line-height: 1.6; }
         .pdf-table .total-row { background: #003366; color: white; font-weight: bold; }
-        .remarks-box { background: #f8f9fa; border: 1px solid #b3d4fc; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; font-size: 14px; }
-        .remarks-col ul { list-style: none; padding: 0; margin: 0; }
-        .remarks-col li { margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="container" id="main-form">
-        <h2>Executive Daily Entry</h2>
+    <!-- LOGIN SCREEN -->
+    <div class="container" id="login-screen">
+        <h2>Executive Login</h2>
+        <label>Date:</label><input type="date" id="login-date">
+        <label>Select Name:</label><select id="login-name"></select>
+        <label>Passcode (PIN):</label><input type="password" id="login-pin" placeholder="Enter 4-Digit PIN">
+        <button class="btn btn-blue" onclick="verifyLogin()">Login & Fetch Accounts</button>
+    </div>
+
+    <!-- ENTRY SCREEN -->
+    <div class="container" id="entry-screen" style="display:none;">
+        <h2>Collection Entry</h2>
+        <div style="background:#e6f2ff; padding:10px; border-radius:5px; margin-bottom:15px; text-align:center; font-weight:bold; color:#003366;">
+            Executive: <span id="display-name"></span> | Date: <span id="display-date"></span>
+        </div>
+
+        <h3 style="background:#003366; color:white; padding:10px; border-radius:5px;">Assigned Accounts List</h3>
+        <p style="font-size:12px; color:#555;">Fill the outcome for each assigned account below:</p>
         
-        <div class="row">
-            <div class="col"><label>Date:</label><input type="date" id="entry-date"></div>
-            <div class="col"><label>Executive Name:</label><input type="text" id="entry-exec-name" placeholder="Enter your name"></div>
-        </div>
+        <div id="accounts-container"></div>
+        <!-- Status Dropdown Template: Pending, Lock, PCR, QR, Office, Seizing -->
 
-        <h3>1. Daily Summary</h3>
-        <div class="row">
-            <div class="col"><label>Assigned:</label><input type="number" id="assigned" oninput="updatePending()"></div>
-            <div class="col"><label>Completed:</label><input type="number" id="completed" oninput="updatePending()"></div>
-            <div class="col"><label>Pending:</label><input type="number" id="pending" readonly style="background:#e9ecef;"></div>
-        </div>
-
-        <h3>2. Collection Details</h3>
-        <div class="section-box"><label>1. LOCK</label><div id="lock-container"></div><button class="btn btn-green" style="padding:5px; width:auto;" onclick="addAmountRow('lock-container', 'lock')">+ Add</button></div>
-        <div class="section-box"><label>2. PCR</label><div id="pcr-container"></div><button class="btn btn-green" style="padding:5px; width:auto;" onclick="addAmountRow('pcr-container', 'pcr')">+ Add</button></div>
-        <div class="section-box"><label>3. QR</label><div id="qr-container"></div><button class="btn btn-green" style="padding:5px; width:auto;" onclick="addAmountRow('qr-container', 'qr')">+ Add</button></div>
-        <div class="section-box"><label>4. OFFICE / OTHERS</label><div id="others-container"></div><button class="btn btn-green" style="padding:5px; width:auto;" onclick="addStatusRow('others-container', 'others')">+ Add</button></div>
-        <div class="section-box"><label>5. SEIZING</label><div id="seizing-container"></div><button class="btn btn-green" style="padding:5px; width:auto;" onclick="addSeizingRow('seizing-container', 'seizing')">+ Add</button></div>
-
-        <button class="btn btn-blue" onclick="generateAdvancedPDF()">📄 Download Official PDF</button>
+        <button class="btn btn-green" onclick="generatePDF()">📄 Generate Official PDF Report</button>
     </div>
 
-    <div id="pdf-wrapper">
-        <div id="print-area"></div>
-    </div>
+    <div id="pdf-wrapper"><div id="print-area"></div></div>
 
     <script>
-        document.getElementById('entry-date').valueAsDate = new Date();
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            appId: "1:184676228358:android:7ef47b55ab678bb0dfd287"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let currentExec = ""; let currentDate = ""; let assignedData = [];
 
-        function updatePending() {
-            let assigned = parseInt(document.getElementById('assigned').value) || 0;
-            let completed = parseInt(document.getElementById('completed').value) || 0;
-            let pending = assigned - completed;
-            document.getElementById('pending').value = pending < 0 ? 0 : pending;
+        document.getElementById('login-date').valueAsDate = new Date();
+
+        // Load Names for Login
+        db.ref('Executives').on('value', snap => {
+            let dropdown = document.getElementById('login-name');
+            dropdown.innerHTML = '<option value="">-- Select --</option>';
+            if(snap.exists()){ snap.forEach(child => { dropdown.innerHTML += `<option value="${child.key}">${child.key}</option>`; }); }
+        });
+
+        // Verify Passcode & Fetch Accounts
+        function verifyLogin() {
+            let date = document.getElementById('login-date').value;
+            let name = document.getElementById('login-name').value;
+            let pin = document.getElementById('login-pin').value;
+            if(!name || !pin) return alert("Enter Name and PIN");
+
+            db.ref('Executives/' + name).once('value').then(snap => {
+                if(snap.exists() && snap.val().pin === pin) {
+                    currentExec = name; currentDate = date;
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('entry-screen').style.display = 'block';
+                    document.getElementById('display-name').innerText = name;
+                    document.getElementById('display-date').innerText = date;
+                    fetchAssignedAccounts();
+                } else { alert("Incorrect Passcode!"); }
+            });
         }
 
-        function createSelectHTML() {
-            return `<select class="acc-type" style="width:100px;"><option value="Regular">Regular</option><option value="Matured">Matured</option></select>`;
-        }
-
-        function addAmountRow(containerId, category) {
-            const div = document.createElement('div');
-            div.className = `entry-row ${category}-row`;
-            div.innerHTML = `<input type="text" placeholder="Acc No" class="acc-no"><input type="number" placeholder="Amt (₹)" class="acc-val">${createSelectHTML()}<button class="remove-btn" onclick="this.parentElement.remove()">X</button>`;
-            document.getElementById(containerId).appendChild(div);
-        }
-
-        function addStatusRow(containerId, category) {
-            const div = document.createElement('div');
-            div.className = `entry-row ${category}-row`;
-            div.innerHTML = `<input type="text" placeholder="Acc No" class="acc-no"><input type="text" placeholder="Status" class="acc-val">${createSelectHTML()}<button class="remove-btn" onclick="this.parentElement.remove()">X</button>`;
-            document.getElementById(containerId).appendChild(div);
-        }
-
-        function addSeizingRow(containerId, category) {
-            const div = document.createElement('div');
-            div.className = `entry-row ${category}-row`;
-            div.innerHTML = `<input type="text" placeholder="Acc No" class="acc-no">${createSelectHTML()}<button class="remove-btn" onclick="this.parentElement.remove()">X</button>`;
-            document.getElementById(containerId).appendChild(div);
-        }
-
-        function extractData(category, hasAmount) {
-            let rows = document.querySelectorAll(`.${category}-row`);
-            let count = rows.length;
-            let totalAmount = 0;
-            let accList = [];
-            let amtList = [];
-
-            rows.forEach(row => {
-                let accNo = row.querySelector('.acc-no').value || "";
-                let type = row.querySelector('.acc-type') ? row.querySelector('.acc-type').value : "";
-                
-                if(accNo) {
-                    accList.push(`<b>${accNo}</b> <span style="font-size:12px; color:#555; font-style:italic;">(${type})</span>`);
-                    if (hasAmount) {
-                        let val = parseFloat(row.querySelector('.acc-val').value) || 0;
-                        amtList.push(`₹ ${val.toLocaleString('en-IN')}`);
-                        totalAmount += val;
-                    } else {
-                        amtList.push(`-`);
-                    }
+        function fetchAssignedAccounts() {
+            db.ref('Assignments/' + currentDate + '/' + currentExec).once('value').then(snap => {
+                let container = document.getElementById('accounts-container');
+                container.innerHTML = '';
+                if(snap.exists()) {
+                    assignedData = snap.val();
+                    assignedData.forEach((acc, index) => {
+                        let color = acc.type === "Regular" ? "blue" : "red";
+                        container.innerHTML += `
+                            <div class="acc-card">
+                                <div class="acc-header">
+                                    <span>${acc.accNo} <small style="color:${color};">(${acc.type})</small></span>
+                                    <span style="font-size:12px; color:#555;">Target: ₹${acc.targetAmt}</span>
+                                </div>
+                                <div class="acc-row">
+                                    <select id="status-${index}" style="flex:1;">
+                                        <option value="Pending">Pending (Not done)</option>
+                                        <option value="Lock">Lock</option>
+                                        <option value="PCR">PCR</option>
+                                        <option value="QR">QR</option>
+                                        <option value="Office / Others">Office / Others</option>
+                                        <option value="Seizing">Seizing</option>
+                                    </select>
+                                    <input type="number" id="amt-${index}" placeholder="Collected (₹)" style="flex:1;">
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    container.innerHTML = `<p style="color:red; text-align:center; font-weight:bold;">No Accounts Assigned for Today.</p>`;
                 }
             });
-            return { count: count, accHTML: accList.length > 0 ? accList.join("<br>") : "Nil", amtHTML: amtList.length > 0 ? amtList.join("<br>") : (hasAmount ? "₹ 0" : "-"), totalAmt: totalAmount };
         }
 
-        function generateAdvancedPDF() {
-            let date = document.getElementById('entry-date').value;
-            let dateParts = date.split('-');
-            let formattedDate = dateParts.length === 3 ? `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}` : date;
-            let name = document.getElementById('entry-exec-name').value || "EXECUTIVE";
-            if(!name) { alert("Please enter your name!"); return; }
+        function generatePDF() {
+            if(assignedData.length === 0) return alert("No assigned accounts to generate report.");
+
+            let metrics = { assigned: assignedData.length, completed: 0, pending: 0, lockC: 0, pcrC: 0, qrC: 0, seizingC: 0, totalAmt: 0 };
             
-            let assigned = parseInt(document.getElementById('assigned').value) || 0;
-            let completed = parseInt(document.getElementById('completed').value) || 0;
-            let pending = parseInt(document.getElementById('pending').value) || 0;
-            let completionRate = assigned > 0 ? ((completed / assigned) * 100).toFixed(2) : "0.00";
+            // To segregate rows for PDF
+            let rowsHTML = { Regular: "", Matured: "" }; 
+            let hasRegular = false, hasMatured = false;
 
-            let lockData = extractData('lock', true); let pcrData = extractData('pcr', true);
-            let qrData = extractData('qr', true); let othersData = extractData('others', false);
-            let seizingData = extractData('seizing', false);
+            assignedData.forEach((acc, index) => {
+                let status = document.getElementById(`status-${index}`).value;
+                let amt = parseFloat(document.getElementById(`amt-${index}`).value) || 0;
+                
+                if(status === "Pending") { metrics.pending++; } 
+                else { 
+                    metrics.completed++; 
+                    if(status === "Lock") metrics.lockC++;
+                    if(status === "PCR") metrics.pcrC++;
+                    if(status === "QR") metrics.qrC++;
+                    if(status === "Seizing") metrics.seizingC++;
+                    metrics.totalAmt += amt;
 
-            let totalAccountsHandled = lockData.count + pcrData.count + qrData.count + othersData.count + seizingData.count;
-            let grandTotalAmount = lockData.totalAmt + pcrData.totalAmt + qrData.totalAmt;
+                    let rowData = `<tr><td style="text-align:left; font-weight:bold;">${status}</td><td>${acc.accNo}</td><td>${status === 'Seizing' ? '-' : '₹ ' + amt}</td></tr>`;
+                    if(acc.type === "Regular") { rowsHTML.Regular += rowData; hasRegular = true; }
+                    if(acc.type === "Matured") { rowsHTML.Matured += rowData; hasMatured = true; }
+                }
+            });
 
+            let compRate = metrics.assigned > 0 ? ((metrics.completed / metrics.assigned) * 100).toFixed(2) : "0.00";
+            
             let printArea = document.getElementById('print-area');
             let pdfWrapper = document.getElementById('pdf-wrapper');
-            
-            printArea.innerHTML = `
-                <div class="pdf-title-box">DAILY COLLECTION & SEIZING PERFORMANCE REPORT</div>
-                <div class="pdf-meta"><div><i class="fa-regular fa-calendar-days"></i> Date : ${formattedDate}</div><div><i class="fa-solid fa-user"></i> Executive : ${name.toUpperCase()}</div></div>
-                <div class="pdf-section-title"><i class="fa-solid fa-chart-line"></i> 1. Daily Performance Summary</div>
-                <div class="pdf-cards">
-                    <div class="pdf-card c-assigned"><i class="fa-solid fa-users"></i><div class="val">${assigned < 10 ? '0'+assigned : assigned}</div><div class="lbl">Assigned</div></div>
-                    <div class="pdf-card c-completed"><i class="fa-solid fa-circle-check"></i><div class="val">${completed < 10 ? '0'+completed : completed}</div><div class="lbl">Completed</div></div>
-                    <div class="pdf-card c-pending"><i class="fa-regular fa-clock"></i><div class="val">${pending < 10 ? '0'+pending : pending}</div><div class="lbl">Pending</div></div>
-                    <div class="pdf-card c-lock"><i class="fa-solid fa-lock"></i><div class="val">${lockData.count < 10 ? '0'+lockData.count : lockData.count}</div><div class="lbl">Lock</div></div>
-                    <div class="pdf-card c-pcr"><i class="fa-solid fa-file-invoice"></i><div class="val">${pcrData.count < 10 ? '0'+pcrData.count : pcrData.count}</div><div class="lbl">PCR</div></div>
-                    <div class="pdf-card c-seizing"><i class="fa-solid fa-gavel"></i><div class="val">${seizingData.count < 10 ? '0'+seizingData.count : seizingData.count}</div><div class="lbl">Seizing</div></div>
-                </div>
-                <div class="progress-container"><div style="font-weight: bold; color: #003366; font-size: 15px;">Completion Rate | ${completionRate}%</div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${completionRate}%;"></div></div></div>
-                <div class="pdf-section-title"><i class="fa-solid fa-sack-dollar"></i> 2. Collection Performance</div>
+
+            let html = `
+                <div class="pdf-title-box">DAILY COLLECTION PERFORMANCE REPORT</div>
+                <div class="pdf-meta"><div><i class="fa-regular fa-calendar-days"></i> Date : ${currentDate}</div><div><i class="fa-solid fa-user"></i> Executive : ${currentExec}</div></div>
+                
+                <div class="pdf-section-title">1. Daily Performance Summary</div>
+                <table style="width:100%; text-align:center; font-size:14px; margin-bottom:15px; border-collapse:collapse;">
+                    <tr style="background:#e6f2ff; border:1px solid #b3d4fc;"><th style="padding:10px;">Assigned</th><th>Completed</th><th>Pending</th><th>Lock</th><th>PCR</th><th>Seizing</th></tr>
+                    <tr style="font-weight:bold; font-size:18px; border:1px solid #b3d4fc;"><td style="padding:10px;">${metrics.assigned}</td><td style="color:green;">${metrics.completed}</td><td style="color:orange;">${metrics.pending}</td><td>${metrics.lockC}</td><td>${metrics.pcrC}</td><td style="color:purple;">${metrics.seizingC}</td></tr>
+                </table>
+
+                <div class="pdf-section-title">2. Collection Details</div>
                 <table class="pdf-table">
-                    <thead><tr><th>Category</th><th>Account No. & Status</th><th>Amount (₹)</th></tr></thead>
-                    <tbody>
-                        <tr><td style="text-align:left;">Lock</td><td>${lockData.accHTML}</td><td>${lockData.amtHTML}</td></tr>
-                        <tr><td style="text-align:left;">PCR</td><td>${pcrData.accHTML}</td><td>${pcrData.amtHTML}</td></tr>
-                        <tr><td style="text-align:left;">QR</td><td>${qrData.accHTML}</td><td>${qrData.amtHTML}</td></tr>
-                        <tr><td style="text-align:left;">Office / Others</td><td>${othersData.accHTML}</td><td>${othersData.amtHTML}</td></tr>
-                        <tr><td style="text-align:left; font-weight:bold; color:#6f42c1;">Seizing</td><td>${seizingData.accHTML}</td><td>-</td></tr>
-                        <tr class="total-row"><td style="text-align:left;">Total</td><td>${totalAccountsHandled < 10 ? '0'+totalAccountsHandled : totalAccountsHandled} Accounts</td><td>₹ ${grandTotalAmount.toLocaleString('en-IN')}</td></tr>
+                    <thead><tr><th>Status Category</th><th>Account No.</th><th>Collected Amount (₹)</th></tr></thead>
+                    <tbody>`;
+            
+            if(hasRegular) {
+                html += `<tr style="background:#e6e6e6;"><td colspan="3" style="text-align:left; font-weight:bold; color:blue;">REGULAR ACCOUNTS</td></tr>` + rowsHTML.Regular;
+            }
+            if(hasMatured) {
+                html += `<tr style="background:#e6e6e6;"><td colspan="3" style="text-align:left; font-weight:bold; color:red;">MATURED ACCOUNTS</td></tr>` + rowsHTML.Matured;
+            }
+            
+            html += `
+                        <tr class="total-row"><td style="text-align:left;">Overall Total</td><td>${metrics.completed} Completed Accs</td><td>₹ ${metrics.totalAmt.toLocaleString('en-IN')}</td></tr>
                     </tbody>
                 </table>
-                <div class="pdf-section-title"><i class="fa-solid fa-clipboard-check"></i> 3. Executive Remarks</div>
-                <div class="remarks-box">
-                    <div class="remarks-col"><ul><li><i class="fa-solid fa-circle-check" style="color:#003366;"></i> <b>Total Assigned :</b> ${assigned}</li><li><i class="fa-solid fa-circle-check" style="color:#003366;"></i> <b>Successfully Completed :</b> ${completed}</li><li><i class="fa-solid fa-circle-check" style="color:#003366;"></i> <b>Pending Accounts :</b> ${pending}</li></ul></div>
-                    <div class="remarks-col"><ul><li><i class="fa-solid fa-circle-check" style="color:#003366;"></i> <b>Reported Amount :</b> ₹ ${grandTotalAmount.toLocaleString('en-IN')}</li><li><i class="fa-solid fa-circle-check" style="color:#003366;"></i> <b>Seizing Cases :</b> ${seizingData.count}</li></ul></div>
-                </div>
+
+                <div class="pdf-section-title">3. Executive Remarks</div>
+                <table style="width:100%; border:1px solid #b3d4fc; background:#f8f9fa; padding:15px; font-size:14px;">
+                    <tr>
+                        <td style="width:50%; line-height:2;">
+                            <b>Total Assigned:</b> ${metrics.assigned}<br>
+                            <b>Successfully Completed:</b> ${metrics.completed}<br>
+                            <b>Pending Accounts:</b> ${metrics.pending}
+                        </td>
+                        <td style="width:50%; line-height:2;">
+                            <b>Total Collected Amount:</b> ₹ ${metrics.totalAmt.toLocaleString('en-IN')}<br>
+                            <b>Total Seizing Cases:</b> ${metrics.seizingC}
+                        </td>
+                    </tr>
+                </table>
             `;
 
-            document.getElementById('main-form').style.display = 'none';
+            printArea.innerHTML = html;
+            document.getElementById('entry-screen').style.display = 'none';
             pdfWrapper.style.display = 'block';
 
             let opt = {
-                margin: 10, filename: `${name}_Report_${formattedDate}.pdf`, image: { type: 'jpeg', quality: 1.0 },
+                margin: 10, filename: `${currentExec}_Report_${currentDate}.pdf`, image: { type: 'jpeg', quality: 1.0 },
                 html2canvas: { scale: 2, useCORS: true, windowWidth: 800 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             html2pdf().set(opt).from(printArea).save().then(() => {
                 pdfWrapper.style.display = 'none';
-                document.getElementById('main-form').style.display = 'block';
+                document.getElementById('entry-screen').style.display = 'block';
+                // Optional: Save final report to DB here if needed
             });
         }
     </script>
