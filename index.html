@@ -17,72 +17,91 @@
         .btn { padding: 12px; font-size: 15px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; color: white; width: 100%; margin-top: 15px;}
         .btn-blue { background: #003366; } .btn-green { background: #28a745; }
         
+        /* Navigation inside Executive App */
+        .exec-nav { display: flex; gap: 10px; margin-bottom: 20px; }
+        .exec-nav button { flex: 1; padding: 10px; background: #003366; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .exec-nav button.active { background: #28a745; }
+
         .acc-card { background: #f8f9fa; border: 1px solid #b3d4fc; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
         .acc-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 15px; color: #003366; margin-bottom: 5px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;}
         .acc-row { display: flex; gap: 10px; }
         
-        /* PDF STYLES */
         #pdf-wrapper { display: none; }
         #print-area { background: white; padding: 30px; font-family: 'Segoe UI', sans-serif; color: #002244; width: 800px; margin: 0 auto; box-sizing: border-box; }
-        .pdf-title-box { background: #003366; color: white; text-align: center; padding: 12px; border-radius: 8px; font-size: 20px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
-        .pdf-section-title { background: #003366; color: white; padding: 8px 15px; border-radius: 5px 20px 20px 5px; display: inline-block; font-size: 15px; font-weight: bold; margin-bottom: 10px; }
         .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; text-align: center; }
         .pdf-table th { background: #e6f2ff; color: #003366; padding: 10px; border: 1px solid #b3d4fc; }
-        .pdf-table td { padding: 10px; border: 1px solid #b3d4fc; vertical-align: middle; line-height: 1.6; }
-        .pdf-table .total-row { background: #003366; color: white; font-weight: bold; }
+        .pdf-table td { padding: 10px; border: 1px solid #b3d4fc; vertical-align: middle; }
     </style>
 </head>
 <body>
 
-    <!-- LOGIN SCREEN -->
     <div class="container" id="login-screen">
         <h2>Executive Login</h2>
         <label>Date:</label><input type="date" id="login-date">
         <label>Select Name:</label><select id="login-name"></select>
         <label>Passcode (PIN):</label><input type="password" id="login-pin" placeholder="Enter 4-Digit PIN">
-        <button class="btn btn-blue" onclick="verifyLogin()">Login & Fetch Accounts</button>
+        <button class="btn btn-blue" onclick="verifyLogin()">Login to Dashboard</button>
     </div>
 
-    <!-- ENTRY SCREEN -->
-    <div class="container" id="entry-screen" style="display:none;">
-        <h2>Collection Entry</h2>
-        <div style="background:#e6f2ff; padding:10px; border-radius:5px; margin-bottom:15px; text-align:center; font-weight:bold; color:#003366;">
-            Executive: <span id="display-name"></span> | Date: <span id="display-date"></span>
+    <div class="container" id="dashboard-screen" style="display:none;">
+        <div class="exec-nav">
+            <button id="nav-entry" class="active" onclick="switchExecTab('entry-view')">Daily Entry</button>
+            <button id="nav-report" onclick="switchExecTab('report-view')">My Reports</button>
         </div>
 
-        <h3 style="background:#003366; color:white; padding:10px; border-radius:5px;">Assigned Accounts List</h3>
-        <p style="font-size:12px; color:#555;">Fill the outcome for each assigned account below:</p>
-        
-        <div id="accounts-container"></div>
-        <!-- Status Dropdown Template: Pending, Lock, PCR, QR, Office, Seizing -->
+        <!-- DAILY ENTRY VIEW -->
+        <div id="entry-view">
+            <div style="background:#e6f2ff; padding:10px; border-radius:5px; margin-bottom:15px; text-align:center; font-weight:bold; color:#003366;">
+                Executive: <span id="display-name"></span> | Date: <span id="display-date"></span>
+            </div>
+            <h3 style="background:#003366; color:white; padding:10px; border-radius:5px;">Today's Assigned Accounts</h3>
+            <div id="accounts-container"></div>
+            <button class="btn btn-green" onclick="generatePDF()">📄 Save & Generate PDF</button>
+        </div>
 
-        <button class="btn btn-green" onclick="generatePDF()">📄 Generate Official PDF Report</button>
+        <!-- MY REPORTS VIEW -->
+        <div id="report-view" style="display:none;">
+            <h3 style="background:#003366; color:white; padding:10px; border-radius:5px;">My Performance & Balance</h3>
+            <label>From Date:</label><input type="date" id="exec-from-date">
+            <label>To Date:</label><input type="date" id="exec-to-date">
+            <button class="btn btn-blue" onclick="fetchMyReport()">Search Data</button>
+
+            <div id="my-report-data" style="display:none; margin-top:20px;">
+                <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:15px; border-radius:8px; margin-bottom:10px;">
+                    <h4 style="margin:0 0 10px 0; color:#2563eb;">REGULAR ACCOUNTS</h4>
+                    <div>Total Assigned: <span id="e-reg-ass">0</span></div>
+                    <div>Total Completed: <span id="e-reg-com">0</span></div>
+                    <div style="font-weight:bold; color:red; margin-top:5px;">Pending Balance: <span id="e-reg-bal">0</span></div>
+                </div>
+                <div style="background:#fef2f2; border:1px solid #fecaca; padding:15px; border-radius:8px;">
+                    <h4 style="margin:0 0 10px 0; color:#dc2626;">MATURED ACCOUNTS</h4>
+                    <div>Total Assigned: <span id="e-mat-ass">0</span></div>
+                    <div>Total Completed: <span id="e-mat-com">0</span></div>
+                    <div style="font-weight:bold; color:red; margin-top:5px;">Pending Balance: <span id="e-mat-bal">0</span></div>
+                </div>
+                <h3 style="text-align:center; color:#003366; margin-top:20px;">Total Collected: <span id="e-total-amt">₹ 0</span></h3>
+            </div>
+        </div>
     </div>
 
     <div id="pdf-wrapper"><div id="print-area"></div></div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
-            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
-            appId: "1:184676228358:android:7ef47b55ab678bb0dfd287"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI", databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com", projectId: "sri-vishnu-priya-finance-c591f", storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app", appId: "1:184676228358:android:7ef47b55ab678bb0dfd287" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         let currentExec = ""; let currentDate = ""; let assignedData = [];
 
         document.getElementById('login-date').valueAsDate = new Date();
+        document.getElementById('exec-from-date').valueAsDate = new Date();
+        document.getElementById('exec-to-date').valueAsDate = new Date();
 
-        // Load Names for Login
         db.ref('Executives').on('value', snap => {
             let dropdown = document.getElementById('login-name');
             dropdown.innerHTML = '<option value="">-- Select --</option>';
             if(snap.exists()){ snap.forEach(child => { dropdown.innerHTML += `<option value="${child.key}">${child.key}</option>`; }); }
         });
 
-        // Verify Passcode & Fetch Accounts
         function verifyLogin() {
             let date = document.getElementById('login-date').value;
             let name = document.getElementById('login-name').value;
@@ -93,12 +112,23 @@
                 if(snap.exists() && snap.val().pin === pin) {
                     currentExec = name; currentDate = date;
                     document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('entry-screen').style.display = 'block';
+                    document.getElementById('dashboard-screen').style.display = 'block';
                     document.getElementById('display-name').innerText = name;
-                    document.getElementById('display-date').innerText = date;
+                    document.getElementById('display-date').innerText = date.split('-').reverse().join('-');
                     fetchAssignedAccounts();
                 } else { alert("Incorrect Passcode!"); }
             });
+        }
+
+        function switchExecTab(viewId) {
+            document.getElementById('entry-view').style.display = 'none';
+            document.getElementById('report-view').style.display = 'none';
+            document.getElementById('nav-entry').classList.remove('active');
+            document.getElementById('nav-report').classList.remove('active');
+            
+            document.getElementById(viewId).style.display = 'block';
+            if(viewId === 'entry-view') document.getElementById('nav-entry').classList.add('active');
+            else document.getElementById('nav-report').classList.add('active');
         }
 
         function fetchAssignedAccounts() {
@@ -124,7 +154,7 @@
                                         <option value="Office / Others">Office / Others</option>
                                         <option value="Seizing">Seizing</option>
                                     </select>
-                                    <input type="number" id="amt-${index}" placeholder="Collected (₹)" style="flex:1;">
+                                    <input type="number" id="amt-${index}" placeholder="Amount (₹)" style="flex:1;">
                                 </div>
                             </div>
                         `;
@@ -136,13 +166,13 @@
         }
 
         function generatePDF() {
-            if(assignedData.length === 0) return alert("No assigned accounts to generate report.");
-
-            let metrics = { assigned: assignedData.length, completed: 0, pending: 0, lockC: 0, pcrC: 0, qrC: 0, seizingC: 0, totalAmt: 0 };
+            if(assignedData.length === 0) return alert("No assigned accounts.");
             
-            // To segregate rows for PDF
+            let metrics = { assigned: assignedData.length, completed: 0, pending: 0, lockC: 0, pcrC: 0, seizingC: 0, totalAmt: 0 };
             let rowsHTML = { Regular: "", Matured: "" }; 
             let hasRegular = false, hasMatured = false;
+            
+            let saveDetails = [];
 
             assignedData.forEach((acc, index) => {
                 let status = document.getElementById(`status-${index}`).value;
@@ -153,78 +183,108 @@
                     metrics.completed++; 
                     if(status === "Lock") metrics.lockC++;
                     if(status === "PCR") metrics.pcrC++;
-                    if(status === "QR") metrics.qrC++;
                     if(status === "Seizing") metrics.seizingC++;
                     metrics.totalAmt += amt;
 
                     let rowData = `<tr><td style="text-align:left; font-weight:bold;">${status}</td><td>${acc.accNo}</td><td>${status === 'Seizing' ? '-' : '₹ ' + amt}</td></tr>`;
                     if(acc.type === "Regular") { rowsHTML.Regular += rowData; hasRegular = true; }
                     if(acc.type === "Matured") { rowsHTML.Matured += rowData; hasMatured = true; }
+                    
+                    saveDetails.push({ accNo: acc.accNo, type: acc.type, status: status, amt: amt });
                 }
             });
 
-            let compRate = metrics.assigned > 0 ? ((metrics.completed / metrics.assigned) * 100).toFixed(2) : "0.00";
-            
-            let printArea = document.getElementById('print-area');
-            let pdfWrapper = document.getElementById('pdf-wrapper');
+            // Save to Firebase first
+            db.ref('DailyReports/' + currentDate + '/' + currentExec).set({
+                summary: metrics,
+                details: saveDetails
+            }).then(() => {
+                // Then Generate PDF
+                let compRate = metrics.assigned > 0 ? ((metrics.completed / metrics.assigned) * 100).toFixed(2) : "0.00";
+                let printArea = document.getElementById('print-area');
+                let pdfWrapper = document.getElementById('pdf-wrapper');
 
-            let html = `
-                <div class="pdf-title-box">DAILY COLLECTION PERFORMANCE REPORT</div>
-                <div class="pdf-meta"><div><i class="fa-regular fa-calendar-days"></i> Date : ${currentDate}</div><div><i class="fa-solid fa-user"></i> Executive : ${currentExec}</div></div>
+                let html = `
+                    <div style="background:#003366; color:white; text-align:center; padding:12px; border-radius:8px; font-size:20px; font-weight:bold; margin-bottom:15px;">DAILY COLLECTION PERFORMANCE REPORT</div>
+                    <div style="display:flex; justify-content:space-between; border-bottom:2px solid #003366; padding-bottom:10px; margin-bottom:15px; font-size:16px; font-weight:bold;"><div>Date : ${currentDate.split('-').reverse().join('-')}</div><div>Executive : ${currentExec}</div></div>
+                    
+                    <h3 style="background:#003366; color:white; padding:8px 15px; display:inline-block; border-radius:5px;">1. Daily Performance Summary</h3>
+                    <table style="width:100%; text-align:center; font-size:14px; margin-bottom:15px; border-collapse:collapse;">
+                        <tr style="background:#e6f2ff; border:1px solid #b3d4fc;"><th style="padding:10px;">Assigned</th><th>Completed</th><th>Pending</th><th>Lock</th><th>PCR</th><th>Seizing</th></tr>
+                        <tr style="font-weight:bold; font-size:18px; border:1px solid #b3d4fc;"><td style="padding:10px;">${metrics.assigned}</td><td style="color:green;">${metrics.completed}</td><td style="color:orange;">${metrics.pending}</td><td>${metrics.lockC}</td><td>${metrics.pcrC}</td><td style="color:purple;">${metrics.seizingC}</td></tr>
+                    </table>
+
+                    <h3 style="background:#003366; color:white; padding:8px 15px; display:inline-block; border-radius:5px;">2. Collection Details</h3>
+                    <table class="pdf-table">
+                        <thead><tr><th>Status Category</th><th>Account No.</th><th>Amount (₹)</th></tr></thead>
+                        <tbody>`;
                 
-                <div class="pdf-section-title">1. Daily Performance Summary</div>
-                <table style="width:100%; text-align:center; font-size:14px; margin-bottom:15px; border-collapse:collapse;">
-                    <tr style="background:#e6f2ff; border:1px solid #b3d4fc;"><th style="padding:10px;">Assigned</th><th>Completed</th><th>Pending</th><th>Lock</th><th>PCR</th><th>Seizing</th></tr>
-                    <tr style="font-weight:bold; font-size:18px; border:1px solid #b3d4fc;"><td style="padding:10px;">${metrics.assigned}</td><td style="color:green;">${metrics.completed}</td><td style="color:orange;">${metrics.pending}</td><td>${metrics.lockC}</td><td>${metrics.pcrC}</td><td style="color:purple;">${metrics.seizingC}</td></tr>
-                </table>
+                if(hasRegular) html += `<tr style="background:#e6e6e6;"><td colspan="3" style="text-align:left; font-weight:bold; color:blue;">REGULAR ACCOUNTS</td></tr>` + rowsHTML.Regular;
+                if(hasMatured) html += `<tr style="background:#e6e6e6;"><td colspan="3" style="text-align:left; font-weight:bold; color:red;">MATURED ACCOUNTS</td></tr>` + rowsHTML.Matured;
+                
+                html += `<tr style="background:#003366; color:white; font-weight:bold;"><td style="text-align:left;">Overall Total</td><td>${metrics.completed} Completed Accs</td><td>₹ ${metrics.totalAmt.toLocaleString('en-IN')}</td></tr></tbody></table>`;
 
-                <div class="pdf-section-title">2. Collection Details</div>
-                <table class="pdf-table">
-                    <thead><tr><th>Status Category</th><th>Account No.</th><th>Collected Amount (₹)</th></tr></thead>
-                    <tbody>`;
-            
-            if(hasRegular) {
-                html += `<tr style="background:#e6e6e6;"><td colspan="3" style="text-align:left; font-weight:bold; color:blue;">REGULAR ACCOUNTS</td></tr>` + rowsHTML.Regular;
-            }
-            if(hasMatured) {
-                html += `<tr style="background:#e6e6e6;"><td colspan="3" style="text-align:left; font-weight:bold; color:red;">MATURED ACCOUNTS</td></tr>` + rowsHTML.Matured;
-            }
-            
-            html += `
-                        <tr class="total-row"><td style="text-align:left;">Overall Total</td><td>${metrics.completed} Completed Accs</td><td>₹ ${metrics.totalAmt.toLocaleString('en-IN')}</td></tr>
-                    </tbody>
-                </table>
+                printArea.innerHTML = html;
+                document.getElementById('dashboard-screen').style.display = 'none';
+                pdfWrapper.style.display = 'block';
 
-                <div class="pdf-section-title">3. Executive Remarks</div>
-                <table style="width:100%; border:1px solid #b3d4fc; background:#f8f9fa; padding:15px; font-size:14px;">
-                    <tr>
-                        <td style="width:50%; line-height:2;">
-                            <b>Total Assigned:</b> ${metrics.assigned}<br>
-                            <b>Successfully Completed:</b> ${metrics.completed}<br>
-                            <b>Pending Accounts:</b> ${metrics.pending}
-                        </td>
-                        <td style="width:50%; line-height:2;">
-                            <b>Total Collected Amount:</b> ₹ ${metrics.totalAmt.toLocaleString('en-IN')}<br>
-                            <b>Total Seizing Cases:</b> ${metrics.seizingC}
-                        </td>
-                    </tr>
-                </table>
-            `;
-
-            printArea.innerHTML = html;
-            document.getElementById('entry-screen').style.display = 'none';
-            pdfWrapper.style.display = 'block';
-
-            let opt = {
-                margin: 10, filename: `${currentExec}_Report_${currentDate}.pdf`, image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { scale: 2, useCORS: true, windowWidth: 800 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(printArea).save().then(() => {
-                pdfWrapper.style.display = 'none';
-                document.getElementById('entry-screen').style.display = 'block';
-                // Optional: Save final report to DB here if needed
+                html2pdf().set({
+                    margin: 10, filename: `${currentExec}_Report_${currentDate}.pdf`, image: { type: 'jpeg', quality: 1.0 },
+                    html2canvas: { scale: 2, useCORS: true, windowWidth: 800 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                }).from(printArea).save().then(() => {
+                    pdfWrapper.style.display = 'none';
+                    document.getElementById('dashboard-screen').style.display = 'block';
+                    alert("Data Saved & PDF Downloaded!");
+                });
             });
+        }
+
+        // Executive Report Logic
+        async function fetchMyReport() {
+            let fromD = document.getElementById('exec-from-date').value;
+            let toD = document.getElementById('exec-to-date').value;
+            
+            if(!fromD || !toD) return alert("Select Dates!");
+
+            let assignSnap = await db.ref('Assignments').once('value');
+            let reportSnap = await db.ref('DailyReports').once('value');
+            
+            let regAssigned = 0, matAssigned = 0, regCompleted = 0, matCompleted = 0, grandAmt = 0;
+            
+            if(assignSnap.exists()) {
+                assignSnap.forEach(dateNode => {
+                    if(dateNode.key >= fromD && dateNode.key <= toD && dateNode.hasChild(currentExec)) {
+                        dateNode.child(currentExec).val().forEach(a => { if(a.type === 'Regular') regAssigned++; else matAssigned++; });
+                    }
+                });
+            }
+
+            if(reportSnap.exists()) {
+                reportSnap.forEach(dateNode => {
+                    if(dateNode.key >= fromD && dateNode.key <= toD && dateNode.hasChild(currentExec)) {
+                        let data = dateNode.child(currentExec).val();
+                        if(data.details) {
+                            data.details.forEach(item => {
+                                if(item.status !== "Pending") {
+                                    grandAmt += parseFloat(item.amt) || 0;
+                                    if(item.type === 'Regular') regCompleted++; else matCompleted++;
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            document.getElementById('e-reg-ass').innerText = regAssigned;
+            document.getElementById('e-reg-com').innerText = regCompleted;
+            document.getElementById('e-reg-bal').innerText = regAssigned - regCompleted;
+
+            document.getElementById('e-mat-ass').innerText = matAssigned;
+            document.getElementById('e-mat-com').innerText = matCompleted;
+            document.getElementById('e-mat-bal').innerText = matAssigned - matCompleted;
+
+            document.getElementById('e-total-amt').innerText = "₹ " + grandAmt.toLocaleString('en-IN');
+            document.getElementById('my-report-data').style.display = 'block';
         }
     </script>
 </body>
