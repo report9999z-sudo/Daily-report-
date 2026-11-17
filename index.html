@@ -17,7 +17,6 @@
         .btn { padding: 12px; font-size: 15px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; color: white; width: 100%; margin-top: 15px;}
         .btn-blue { background: #003366; } .btn-green { background: #28a745; }
         
-        /* Navigation inside Executive App */
         .exec-nav { display: flex; gap: 10px; margin-bottom: 20px; }
         .exec-nav button { flex: 1; padding: 10px; background: #003366; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
         .exec-nav button.active { background: #28a745; }
@@ -54,7 +53,7 @@
             <div style="background:#e6f2ff; padding:10px; border-radius:5px; margin-bottom:15px; text-align:center; font-weight:bold; color:#003366;">
                 Executive: <span id="display-name"></span> | Date: <span id="display-date"></span>
             </div>
-            <h3 style="background:#003366; color:white; padding:10px; border-radius:5px;">Today's Assigned Accounts</h3>
+            <h3 style="background:#003366; color:white; padding:10px; border-radius:5px;">Assigned Accounts</h3>
             <div id="accounts-container"></div>
             <button class="btn btn-green" onclick="generatePDF()">📄 Save & Generate PDF</button>
         </div>
@@ -70,13 +69,13 @@
                 <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:15px; border-radius:8px; margin-bottom:10px;">
                     <h4 style="margin:0 0 10px 0; color:#2563eb;">REGULAR ACCOUNTS</h4>
                     <div>Total Assigned: <span id="e-reg-ass">0</span></div>
-                    <div>Total Completed: <span id="e-reg-com">0</span></div>
+                    <div>Completed (In Range): <span id="e-reg-com">0</span></div>
                     <div style="font-weight:bold; color:red; margin-top:5px;">Pending Balance: <span id="e-reg-bal">0</span></div>
                 </div>
                 <div style="background:#fef2f2; border:1px solid #fecaca; padding:15px; border-radius:8px;">
                     <h4 style="margin:0 0 10px 0; color:#dc2626;">MATURED ACCOUNTS</h4>
                     <div>Total Assigned: <span id="e-mat-ass">0</span></div>
-                    <div>Total Completed: <span id="e-mat-com">0</span></div>
+                    <div>Completed (In Range): <span id="e-mat-com">0</span></div>
                     <div style="font-weight:bold; color:red; margin-top:5px;">Pending Balance: <span id="e-mat-bal">0</span></div>
                 </div>
                 <h3 style="text-align:center; color:#003366; margin-top:20px;">Total Collected: <span id="e-total-amt">₹ 0</span></h3>
@@ -132,7 +131,8 @@
         }
 
         function fetchAssignedAccounts() {
-            db.ref('Assignments/' + currentDate + '/' + currentExec).once('value').then(snap => {
+            // KEY FIX: Fetching from Executive's Master List, regardless of date.
+            db.ref(`Assignments/${currentExec}`).once('value').then(snap => {
                 let container = document.getElementById('accounts-container');
                 container.innerHTML = '';
                 if(snap.exists()) {
@@ -160,7 +160,7 @@
                         `;
                     });
                 } else {
-                    container.innerHTML = `<p style="color:red; text-align:center; font-weight:bold;">No Accounts Assigned for Today.</p>`;
+                    container.innerHTML = `<p style="color:red; text-align:center; font-weight:bold;">No Active Assignments.</p>`;
                 }
             });
         }
@@ -194,12 +194,11 @@
                 }
             });
 
-            // Save to Firebase first
-            db.ref('DailyReports/' + currentDate + '/' + currentExec).set({
+            // Save specific date entry
+            db.ref(`DailyReports/${currentDate}/${currentExec}`).set({
                 summary: metrics,
                 details: saveDetails
             }).then(() => {
-                // Then Generate PDF
                 let compRate = metrics.assigned > 0 ? ((metrics.completed / metrics.assigned) * 100).toFixed(2) : "0.00";
                 let printArea = document.getElementById('print-area');
                 let pdfWrapper = document.getElementById('pdf-wrapper');
@@ -239,23 +238,19 @@
             });
         }
 
-        // Executive Report Logic
         async function fetchMyReport() {
             let fromD = document.getElementById('exec-from-date').value;
             let toD = document.getElementById('exec-to-date').value;
-            
             if(!fromD || !toD) return alert("Select Dates!");
 
-            let assignSnap = await db.ref('Assignments').once('value');
+            let assignSnap = await db.ref(`Assignments/${currentExec}`).once('value');
             let reportSnap = await db.ref('DailyReports').once('value');
             
             let regAssigned = 0, matAssigned = 0, regCompleted = 0, matCompleted = 0, grandAmt = 0;
             
             if(assignSnap.exists()) {
-                assignSnap.forEach(dateNode => {
-                    if(dateNode.key >= fromD && dateNode.key <= toD && dateNode.hasChild(currentExec)) {
-                        dateNode.child(currentExec).val().forEach(a => { if(a.type === 'Regular') regAssigned++; else matAssigned++; });
-                    }
+                assignSnap.forEach(aNode => {
+                    if(aNode.val().type === 'Regular') regAssigned++; else matAssigned++;
                 });
             }
 
