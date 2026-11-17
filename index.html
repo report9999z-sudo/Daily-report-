@@ -22,6 +22,11 @@
 
         .info-bar { background: #e9ecef; padding: 15px; display: flex; justify-content: space-between; font-weight: bold; border-left: 4px solid #003366; margin-bottom: 20px; }
         
+        /* Dashboard Stats */
+        .stat-box { background: #fff; border: 1px solid #ddd; padding: 15px; text-align: center; flex: 1; border-radius: 4px; }
+        .stat-box .val { font-size: 24px; font-weight: bold; color: #003366; }
+        .stat-box .lbl { font-size: 12px; font-weight: bold; color: #666; text-transform: uppercase; margin-top: 5px; }
+
         /* Print Styles */
         #print-section { display: none; }
         @media print { 
@@ -56,14 +61,57 @@
 
         <div style="overflow-x:auto;">
             <table class="classic-table">
-                <thead><tr><th>Acc No</th><th>Type (Inst/Year)</th><th>Target</th><th>Status</th><th>Amount (₹)</th></tr></thead>
+                <thead><tr><th>Acc No</th><th>Type (Inst/Year)</th><th>Amount</th><th>Status</th><th>Collected (₹)</th></tr></thead>
                 <tbody id="accounts-tbody"></tbody>
             </table>
         </div>
 
         <button class="btn btn-green" onclick="submitDailyReport()">Save & Print Today's Report</button>
+
+        <!-- SEPARATOR FOR REPORT -->
+        <hr style="margin: 40px 0; border: 0; border-top: 2px dashed #ccc;">
+
+        <!-- EXECUTIVE REPORT SECTION -->
+        <h2 style="margin-top:0;">My Performance Report</h2>
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <div style="flex:1"><label>From Date:</label><input type="date" id="exec-from-date"></div>
+            <div style="flex:1"><label>To Date:</label><input type="date" id="exec-to-date"></div>
+        </div>
+        <button class="btn btn-blue" onclick="fetchMyReport()" style="margin-top:0;">Search My Data</button>
+
+        <div id="my-report-data" style="display:none; margin-top:20px;">
+            <div style="display:flex; gap:10px; margin-bottom: 20px;">
+                <div class="stat-box"><div class="val" id="e-assigned">0</div><div class="lbl">Total Assigned</div></div>
+                <div class="stat-box"><div class="val" id="e-completed" style="color:#28a745;">0</div><div class="lbl">Completed (In Range)</div></div>
+                <div class="stat-box"><div class="val" id="e-pending" style="color:#dc3545;">0</div><div class="lbl">Total Balance</div></div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <div class="stat-box" style="background:#e6f2ff; border-color:#b3d4fc;">
+                    <h4 style="margin:0 0 10px 0; color:#0056b3;">REGULAR ACCOUNTS</h4>
+                    <div style="font-size:14px; line-height:1.8;">
+                        Assigned: <span id="e-reg-ass" style="font-weight:bold;">0</span><br>
+                        Completed: <span id="e-reg-com" style="font-weight:bold; color:#28a745;">0</span><br>
+                        Balance: <span id="e-reg-bal" style="font-weight:bold; color:#dc3545;">0</span>
+                    </div>
+                </div>
+                <div class="stat-box" style="background:#fef2f2; border-color:#fecaca;">
+                    <h4 style="margin:0 0 10px 0; color:#dc2626;">MATURED ACCOUNTS</h4>
+                    <div style="font-size:14px; line-height:1.8;">
+                        Assigned: <span id="e-mat-ass" style="font-weight:bold;">0</span><br>
+                        Completed: <span id="e-mat-com" style="font-weight:bold; color:#28a745;">0</span><br>
+                        Balance: <span id="e-mat-bal" style="font-weight:bold; color:#dc3545;">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 style="text-align:center; color:#003366; border:1px solid #ccc; padding:15px; margin-top:20px; background:#fff;">
+                Total Collected Amount: <span id="e-total-amt" style="color:#28a745;">₹ 0</span>
+            </h3>
+        </div>
     </div>
 
+    <!-- HIDDEN PRINT AREA -->
     <div id="print-section"></div>
 
     <script>
@@ -75,6 +123,8 @@
         let assignedData = {};
 
         document.getElementById('login-date').valueAsDate = new Date();
+        document.getElementById('exec-from-date').valueAsDate = new Date();
+        document.getElementById('exec-to-date').valueAsDate = new Date();
 
         db.ref('Executives').on('value', snap => {
             let dropdown = document.getElementById('login-name');
@@ -106,17 +156,17 @@
                 let tbody = document.getElementById('accounts-tbody');
                 tbody.innerHTML = '';
                 if(snap.exists()) {
-                    assignedData = snap.val(); // It's an object now, not array
-                    Object.values(assignedData).forEach((acc, index) => {
+                    assignedData = snap.val(); 
+                    Object.values(assignedData).forEach((acc) => {
                         let color = acc.type === "Regular" ? "color:blue;" : "color:red;";
                         tbody.innerHTML += `
                             <tr>
-                                <td style="font-weight:bold;">${acc.accNo}</td>
-                                <td><span style="font-weight:bold; ${color}">${acc.type}</span><br><small>(${acc.installments})</small></td>
-                                <td>₹${acc.targetAmt}</td>
+                                <td style="font-weight:bold; font-size:14px;">${acc.accNo}</td>
+                                <td><span style="font-weight:bold; ${color}">${acc.type}</span><br><small style="color:#666;">(${acc.installments})</small></td>
+                                <td style="font-weight:bold;">₹${acc.targetAmt}</td>
                                 <td>
                                     <select id="status-${acc.accNo}">
-                                        <option value="Pending">Pending (Not Done)</option>
+                                        <option value="Pending">Pending</option>
                                         <option value="Lock">Lock</option>
                                         <option value="PCR">PCR</option>
                                         <option value="QR">QR</option>
@@ -124,7 +174,7 @@
                                         <option value="Seizing">Seizing</option>
                                     </select>
                                 </td>
-                                <td><input type="number" id="amt-${acc.accNo}" placeholder="₹ Amount"></td>
+                                <td><input type="number" id="amt-${acc.accNo}" placeholder="₹ Amt"></td>
                             </tr>
                         `;
                     });
@@ -144,7 +194,6 @@
                 let status = document.getElementById(`status-${acc.accNo}`).value;
                 let amt = parseFloat(document.getElementById(`amt-${acc.accNo}`).value) || 0;
                 
-                // Only save accounts that were marked as something other than 'Pending' today
                 if(status !== "Pending") {
                     saveDetails[acc.accNo] = {
                         accNo: acc.accNo,
@@ -158,9 +207,8 @@
                 }
             });
 
-            if(count === 0) return alert("You haven't changed any account status from 'Pending'. Please enter collection details before submitting.");
+            if(count === 0) return alert("Please update at least one account status before submitting.");
 
-            // Save to Database
             db.ref(`DailyReports/${currentDate}/${currentExec}/details`).update(saveDetails).then(() => {
                 alert("Collection Submitted Successfully! Generating Print...");
                 generatePrint(saveDetails, totalAmt);
@@ -177,7 +225,7 @@
                 <table style="width:100%; border-collapse:collapse; text-align:center; font-size:13px; font-family:Arial, sans-serif;">
                     <tr style="background:#f0f0f0;">
                         <th style="border:1px solid #000; padding:8px;">Category</th>
-                        <th style="border:1px solid #000; padding:8px;">Account No & Info</th>
+                        <th style="border:1px solid #000; padding:8px;">Account No & Inst/Year</th>
                         <th style="border:1px solid #000; padding:8px;">Status</th>
                         <th style="border:1px solid #000; padding:8px;">Amount</th>
                     </tr>`;
@@ -192,14 +240,66 @@
                 </tr>`;
             });
 
-            html += `<tr style="background:#e9ecef; font-weight:bold;"><td colspan="3" style="border:1px solid #000; padding:8px; text-align:right;">Total Collected Amount:</td><td style="border:1px solid #000; padding:8px;">₹ ${grandTotal}</td></tr>`;
+            html += `<tr style="background:#e9ecef; font-weight:bold;"><td colspan="3" style="border:1px solid #000; padding:10px; text-align:right;">Total Collected Amount:</td><td style="border:1px solid #000; padding:10px;">₹ ${grandTotal}</td></tr>`;
             html += `</table>`;
 
             document.getElementById('print-section').innerHTML = html;
             window.print();
             
-            // Reload page to refresh inputs
             setTimeout(() => { window.location.reload(); }, 1000);
+        }
+
+        async function fetchMyReport() {
+            let fromD = document.getElementById('exec-from-date').value;
+            let toD = document.getElementById('exec-to-date').value;
+            
+            if(!fromD || !toD) return alert("Select Dates!");
+
+            let assignSnap = await db.ref(`Assignments/${currentExec}`).once('value');
+            let reportSnap = await db.ref('DailyReports').once('value');
+            
+            let regAssigned = 0, matAssigned = 0, regCompleted = 0, matCompleted = 0, grandAmt = 0;
+            
+            if(assignSnap.exists()) {
+                assignSnap.forEach(aNode => {
+                    if(aNode.val().type === 'Regular') regAssigned++; else matAssigned++;
+                });
+            }
+
+            if(reportSnap.exists()) {
+                reportSnap.forEach(dateNode => {
+                    if(dateNode.key >= fromD && dateNode.key <= toD && dateNode.hasChild(currentExec)) {
+                        let data = dateNode.child(currentExec).val();
+                        if(data.details) {
+                            Object.values(data.details).forEach(item => {
+                                if(item.status !== "Pending") {
+                                    grandAmt += parseFloat(item.amt) || 0;
+                                    if(item.type === 'Regular') regCompleted++; else matCompleted++;
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            let totalAssigned = regAssigned + matAssigned;
+            let totalCompleted = regCompleted + matCompleted;
+
+            document.getElementById('e-assigned').innerText = totalAssigned;
+            document.getElementById('e-completed').innerText = totalCompleted;
+            document.getElementById('e-pending').innerText = totalAssigned - totalCompleted;
+
+            document.getElementById('e-reg-ass').innerText = regAssigned;
+            document.getElementById('e-reg-com').innerText = regCompleted;
+            document.getElementById('e-reg-bal').innerText = regAssigned - regCompleted;
+
+            document.getElementById('e-mat-ass').innerText = matAssigned;
+            document.getElementById('e-mat-com').innerText = matCompleted;
+            document.getElementById('e-mat-bal').innerText = matAssigned - matCompleted;
+
+            document.getElementById('e-total-amt').innerText = "₹ " + grandAmt.toLocaleString('en-IN');
+            document.getElementById('my-report-data').style.display = 'block';
+            document.getElementById('my-report-data').scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
