@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Portal - Sri Vishnu Priya Finance</title>
+    <title>Employee Portal - Sri Vishnu Priya</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         :root { --primary: #0f172a; --secondary: #2563eb; --bg-color: #f1f5f9; --card-bg: #ffffff; --text-dark: #1e293b; --border: #e2e8f0; --success: #16a34a; }
@@ -54,7 +54,6 @@
         </div>
 
         <div class="main-content">
-            <!-- DAILY ENTRY -->
             <div id="daily-entry" class="tab-content active">
                 <div class="section-header no-print">
                     <h3>DAILY PERFORMANCE ENTRY</h3><span>Date: <span id="entry-date"></span></span>
@@ -67,7 +66,6 @@
                 </div>
             </div>
 
-            <!-- REPORT WITH DATE SELECT & NO ACTIONS -->
             <div id="performance-report" class="tab-content">
                 <div class="section-header no-print">
                     <h3>PERFORMANCE REPORT</h3>
@@ -84,10 +82,8 @@
 
                 <h4>REGULAR SUMMARY</h4><div class="cards-wrapper" id="r-cards"></div>
                 <h4>MATURED SUMMARY</h4><div class="cards-wrapper" id="m-cards"></div>
-
                 <h4>SUBMITTED PERFORMANCE</h4>
                 <div class="table-container">
-                    <!-- Added INS Column, Removed Action Column -->
                     <table>
                         <thead><tr><th>A/C No</th><th>Type</th><th>INS</th><th>Status</th><th>Amount</th></tr></thead>
                         <tbody id="submitted-performance-body"></tbody>
@@ -110,8 +106,8 @@
         
         let loggedEmp = "", empMap = {}, totalRAssign=0, totalMAssign=0;
 
-        // Fetch Executives
-        onValue(ref(db, 'Executives'), (snap) => {
+        // Login Logic
+        onValue(ref(db, 'executives'), (snap) => {
             const sel = document.getElementById('login-emp-name'); sel.innerHTML = '<option value="">--Select--</option>';
             if(snap.exists()) { snap.forEach(ch => { empMap[ch.val().name] = ch.val().passcode; sel.innerHTML += `<option value="${ch.val().name}">${ch.val().name}</option>`; }); }
         });
@@ -126,7 +122,7 @@
         }
 
         function loadAssignedAccounts() {
-            onValue(ref(db, `Assignments/${loggedEmp}`), (snap) => {
+            onValue(ref(db, `assignments/${loggedEmp}`), (snap) => {
                 const tbody = document.getElementById('assigned-accounts-body'); tbody.innerHTML=''; totalRAssign=0; totalMAssign=0;
                 if(snap.exists()) {
                     snap.forEach(ch => {
@@ -145,20 +141,22 @@
         window.submitPerf = function(id, type, ins) {
             const st = document.getElementById(`st-${id}`).value, am = document.getElementById(`am-${id}`).value;
             if(!st) return alert("Select Status");
-            set(ref(db, `DailyReports/${todayStr}/${loggedEmp}/${id}`), { accountNo: document.getElementById(`st-${id}`).parentElement.parentElement.cells[0].innerText, type: type, ins: ins, status: st, amount: am||0 }).then(()=>alert("✅ Submited!"));
+            set(ref(db, `daily_performance/${todayStr}/${loggedEmp}/${id}`), { 
+                accountNo: document.getElementById(`st-${id}`).parentElement.parentElement.cells[0].innerText, 
+                type: type, ins: ins, status: st, amount: am||0 
+            }).then(()=>alert("✅ Submited!")).catch(e => alert("❌ Error: " + e.message));
         }
 
-        // Employee Report with specific Date Selection
         window.fetchEmployeeReport = function() {
             const dateInput = document.getElementById('report-date-select').value;
-            if(!dateInput) return alert("Please select a date to view report!");
+            if(!dateInput) return alert("Please select a date!");
             
             const selDate = new Date(dateInput);
             const dbDate = `${selDate.getDate().toString().padStart(2,'0')}-${(selDate.getMonth()+1).toString().padStart(2,'0')}-${selDate.getFullYear()}`;
             document.getElementById('print-report-date').innerText = dbDate;
             document.getElementById('print-header-div').style.display = 'block';
 
-            onValue(ref(db, `DailyReports/${dbDate}/${loggedEmp}`), (snap) => {
+            onValue(ref(db, `daily_performance/${dbDate}/${loggedEmp}`), (snap) => {
                 const tbody = document.getElementById('submitted-performance-body'); tbody.innerHTML='';
                 let rC={c:0,l:0,p:0,o:0,s:0}, mC={c:0,l:0,p:0,o:0,s:0};
                 
@@ -166,13 +164,11 @@
                     snap.forEach(ch => {
                         const d = ch.val(), t = d.type==='REGULAR'?rC:mC;
                         t.c++; if(d.status==='LOCK')t.l++; else if(d.status==='PCR')t.p++; else if(d.status==='OP'||d.status==="OP'S")t.o++; else if(d.status==='SEEZING')t.s++;
-                        // NO Action Column Here, INS Included
                         tbody.innerHTML += `<tr><td><strong>${d.accountNo}</strong></td><td>${d.type}</td><td>${d.ins||'-'}</td><td>${d.status}</td><td>₹${d.amount}</td></tr>`;
                     });
-                } else { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No records found for this date.</td></tr>'; }
+                } else { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No records found.</td></tr>'; }
 
-                document.getElementById('r-cards').innerHTML = bCard(totalRAssign, rC);
-                document.getElementById('m-cards').innerHTML = bCard(totalMAssign, mC);
+                document.getElementById('r-cards').innerHTML = bCard(totalRAssign, rC); document.getElementById('m-cards').innerHTML = bCard(totalMAssign, mC);
             });
         }
         function bCard(a,c){ return `<div class="stat-card"><h5>Assigned</h5><div class="val">${a}</div></div><div class="stat-card"><h5>Completed</h5><div class="val">${c.c}</div></div><div class="stat-card"><h5>Balance</h5><div class="val">${Math.max(0,a-c.c)}</div></div><div class="stat-card"><h5>LOCK</h5><div class="val">${c.l}</div></div><div class="stat-card"><h5>PCR</h5><div class="val">${c.p}</div></div><div class="stat-card"><h5>OP</h5><div class="val">${c.o}</div></div><div class="stat-card"><h5>SEEZING</h5><div class="val">${c.s}</div></div>`; }
