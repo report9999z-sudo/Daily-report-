@@ -5,450 +5,180 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Portal - Sri Vishnu Priya Finance</title>
     <style>
-        /* పక్కా ప్రీమియం కార్పొరేట్ డిజైన్ */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        :root {
-            --primary: #0f172a;    /* Deep Slate */
-            --secondary: #2563eb;  /* Royal Blue */
-            --bg-color: #f1f5f9;   /* Light Gray */
-            --card-bg: #ffffff;
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --success: #16a34a;
-            --danger: #dc2626;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-        }
-
-        /* --- LOGIN SCREEN --- */
-        #login-screen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-        }
-        .login-box {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 380px;
-        }
-        .login-box h2 {
-            margin: 0 0 25px 0;
-            color: var(--primary);
-            text-align: center;
-            font-weight: 700;
-        }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
-        .form-group select, .form-group input {
-            width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box; outline: none;
-        }
-        .form-group select:focus, .form-group input:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        .btn-full { width: 100%; padding: 12px; background: var(--secondary); color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-full:hover { background: #1d4ed8; }
-
-        /* --- DASHBOARD LAYOUT --- */
+        :root { --primary: #0f172a; --secondary: #2563eb; --bg-color: #f1f5f9; --card-bg: #ffffff; --text-dark: #1e293b; --border: #e2e8f0; --success: #16a34a; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
+        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+        .login-box { background: var(--card-bg); padding: 40px; border-radius: 12px; width: 100%; max-width: 380px; text-align: center; }
+        .form-group { margin-bottom: 20px; text-align: left; } .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
+        .form-group select, .form-group input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
+        .btn-full { width: 100%; padding: 12px; background: var(--secondary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
         #dashboard-screen { display: none; min-height: 100vh; }
         .sidebar { width: 260px; background: var(--primary); color: white; position: fixed; height: 100vh; display: flex; flex-direction: column; }
         .brand { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .brand h2 { margin: 0; font-size: 1.1rem; }
-        .brand p { margin: 5px 0 0 0; color: #94a3b8; font-size: 0.85rem; }
-        .tab-btn { background: transparent; color: #cbd5e1; border: none; padding: 15px 25px; text-align: left; font-size: 0.95rem; font-weight: 500; cursor: pointer; border-left: 4px solid transparent; transition: 0.2s; }
-        .tab-btn:hover, .tab-btn.active { background: rgba(255,255,255,0.05); color: white; border-left-color: var(--secondary); }
-        .logout-btn { margin-top: auto; background: #991b1b; color: white; border: none; padding: 15px; cursor: pointer; font-weight: 600; }
-        
+        .tab-btn { background: transparent; color: #cbd5e1; border: none; padding: 15px 25px; text-align: left; cursor: pointer; width: 100%; }
+        .tab-btn.active { background: rgba(255,255,255,0.05); color: white; border-left: 4px solid var(--secondary); }
         .main-content { margin-left: 260px; padding: 30px; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
-        .section-header h3 { margin: 0; color: var(--primary); font-size: 1.4rem; }
-        
-        /* Buttons */
-        .btn-print { background: var(--text-dark); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-        .btn-submit { background: var(--success); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; }
-        
-        /* Tables */
-        .table-container { background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8fafc; padding: 15px; text-align: left; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
-        tr:last-child td { border-bottom: none; }
-        .input-sm { padding: 8px; border: 1px solid var(--border); border-radius: 4px; width: 120px; }
-        
-        /* Summary Cards */
+        .btn-print { background: var(--text-dark); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+        .btn-submit { background: var(--success); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        .table-container { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f8fafc; padding: 15px; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid var(--border); }
+        .input-sm { padding: 8px; border: 1px solid var(--border); border-radius: 4px; }
         .cards-wrapper { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px; }
-        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border); flex: 1; min-width: 120px; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .stat-card h5 { margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; }
-        .stat-card .val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        /* --- PRINT STYLES --- */
-        @media print {
-            body { background: white; }
-            .sidebar, .no-print { display: none !important; }
-            .main-content { margin-left: 0; padding: 0; }
-            .print-header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 20px; padding-bottom: 10px; }
-            .print-header h2 { margin: 0; font-size: 1.5rem; }
-            .stat-card { border: 1px solid #000; box-shadow: none; padding: 10px; }
-            table th { background: #eee !important; -webkit-print-color-adjust: exact; }
-            table th, table td { border: 1px solid #ccc; padding: 8px; }
-        }
+        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border); flex: 1; text-align: center; }
+        .stat-card h5 { margin: 0 0 10px 0; font-size: 0.8rem; } .stat-card .val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .tab-content { display: none; } .tab-content.active { display: block; }
+        @media print { body { background: white; } .sidebar, .no-print { display: none !important; } .main-content { margin: 0; padding: 0; } .stat-card, table, th, td { border: 1px solid #000; } }
     </style>
 </head>
 <body>
 
-    <!-- 1. LOGIN SCREEN -->
     <div id="login-screen">
         <div class="login-box">
             <h2>Employee Login</h2>
-            <div class="form-group">
-                <label>Select Your Name</label>
-                <select id="login-emp-name">
-                    <option value="">Loading Employees...</option>
-                    <!-- Firebase nundi dynamically load avuthayi -->
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Passcode</label>
-                <input type="password" id="login-passcode" placeholder="Enter assigned passcode">
-            </div>
-            <button class="btn-full" onclick="authenticateEmployee()">LOG IN</button>
+            <div class="form-group"><label>Select Name</label><select id="login-emp-name"></select></div>
+            <div class="form-group"><label>Passcode</label><input type="password" id="login-passcode"></div>
+            <button class="btn-full" onclick="authEmp()">LOG IN</button>
         </div>
     </div>
 
-    <!-- 2. DASHBOARD SCREEN -->
     <div id="dashboard-screen">
-        
-        <!-- Sidebar -->
         <div class="sidebar no-print">
-            <div class="brand">
-                <h2>Employee Portal</h2>
-                <p id="display-emp-name">Loading...</p>
-            </div>
-            <button class="tab-btn active" onclick="switchTab('daily-entry', this)">DAILY PERFORMANCE ENTRY</button>
+            <div class="brand"><h2>Employee Portal</h2><p id="display-emp-name"></p></div>
+            <button class="tab-btn active" onclick="switchTab('daily-entry', this)">DAILY ENTRY</button>
             <button class="tab-btn" onclick="switchTab('performance-report', this)">PERFORMANCE REPORT</button>
-            <button class="logout-btn" onclick="location.reload()">LOGOUT</button>
+            <button class="tab-btn" style="margin-top:auto; background:#991b1b;" onclick="location.reload()">LOGOUT</button>
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
-            
-            <!-- A. DAILY PERFORMANCE ENTRY -->
+            <!-- DAILY ENTRY -->
             <div id="daily-entry" class="tab-content active">
                 <div class="section-header no-print">
-                    <div>
-                        <h3>DAILY PERFORMANCE ENTRY</h3>
-                        <span style="color:var(--text-muted); font-size:0.9rem;">Date: <span id="entry-date"></span></span>
-                    </div>
+                    <h3>DAILY PERFORMANCE ENTRY</h3><span>Date: <span id="entry-date"></span></span>
                 </div>
-                
                 <div class="table-container">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Account No</th>
-                                <th>Type</th>
-                                <th>INS / Year</th>
-                                <th>Status</th>
-                                <th>Amount</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="assigned-accounts-body">
-                            <tr><td colspan="6" style="text-align:center; color:gray;">Loading assigned accounts from Firebase...</td></tr>
-                        </tbody>
+                        <thead><tr><th>A/C No</th><th>Type</th><th>INS/Year</th><th>Status</th><th>Amount</th><th>Action</th></tr></thead>
+                        <tbody id="assigned-accounts-body"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- B. PERFORMANCE REPORT -->
+            <!-- REPORT WITH DATE SELECT & NO ACTIONS -->
             <div id="performance-report" class="tab-content">
                 <div class="section-header no-print">
                     <h3>PERFORMANCE REPORT</h3>
-                    <button class="btn-print" onclick="window.print()">🖨️ PRINT REPORT</button>
+                    <div style="display:flex; gap:10px;">
+                        <input type="date" id="report-date-select" class="input-sm">
+                        <button class="btn-submit" onclick="fetchEmployeeReport()">SEARCH</button>
+                        <button class="btn-print" onclick="window.print()">🖨️ PRINT</button>
+                    </div>
                 </div>
 
-                <!-- Print Header -->
-                <div class="print-header" style="display: none;" id="print-header-div">
-                    <h2>DAILY PERFORMANCE REPORT</h2>
-                    <p>
-                        <strong>Employee:</strong> <span id="print-emp-name"></span> &nbsp;|&nbsp; 
-                        <strong>Date:</strong> <span id="print-report-date"></span>
-                    </p>
+                <div class="print-header" style="text-align:center; display:none;" id="print-header-div">
+                    <h2>PERFORMANCE REPORT</h2><p><span id="print-emp-name"></span> | <span id="print-report-date"></span></p>
                 </div>
 
-                <h4 style="margin-top:0; color:var(--text-muted);">REGULAR SUMMARY</h4>
-                <div class="cards-wrapper" id="regular-cards">
-                    <div class="stat-card"><h5>Assigned</h5><div class="val" id="r-assign">0</div></div>
-                    <div class="stat-card"><h5>Completed</h5><div class="val" id="r-comp">0</div></div>
-                    <div class="stat-card"><h5>Balance</h5><div class="val" id="r-bal">0</div></div>
-                    <div class="stat-card"><h5>LOCK</h5><div class="val" id="r-lock">0</div></div>
-                    <div class="stat-card"><h5>PCR</h5><div class="val" id="r-pcr">0</div></div>
-                    <div class="stat-card"><h5>OP</h5><div class="val" id="r-op">0</div></div>
-                    <div class="stat-card"><h5>SEEZING</h5><div class="val" id="r-seez">0</div></div>
-                </div>
+                <h4>REGULAR SUMMARY</h4><div class="cards-wrapper" id="r-cards"></div>
+                <h4>MATURED SUMMARY</h4><div class="cards-wrapper" id="m-cards"></div>
 
-                <h4 style="color:var(--text-muted);">MATURED SUMMARY</h4>
-                <div class="cards-wrapper" id="matured-cards">
-                    <div class="stat-card"><h5>Assigned</h5><div class="val" id="m-assign">0</div></div>
-                    <div class="stat-card"><h5>Completed</h5><div class="val" id="m-comp">0</div></div>
-                    <div class="stat-card"><h5>Balance</h5><div class="val" id="m-bal">0</div></div>
-                    <div class="stat-card"><h5>LOCK</h5><div class="val" id="m-lock">0</div></div>
-                    <div class="stat-card"><h5>PCR</h5><div class="val" id="m-pcr">0</div></div>
-                    <div class="stat-card"><h5>OP</h5><div class="val" id="m-op">0</div></div>
-                    <div class="stat-card"><h5>SEEZING</h5><div class="val" id="m-seez">0</div></div>
-                </div>
-
-                <h4 style="color:var(--text-muted); margin-top:30px;">TODAY'S SUBMITTED PERFORMANCE</h4>
+                <h4>SUBMITTED PERFORMANCE</h4>
                 <div class="table-container">
+                    <!-- Added INS Column, Removed Action Column -->
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Account No</th>
-                                <th>Type</th>
-                                <th>Status</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="submitted-performance-body">
-                            <tr><td colspan="4" style="text-align:center; color:gray;">No entries submitted yet today.</td></tr>
-                        </tbody>
+                        <thead><tr><th>A/C No</th><th>Type</th><th>INS</th><th>Status</th><th>Amount</th></tr></thead>
+                        <tbody id="submitted-performance-body"></tbody>
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- Firebase SDK Setup -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, get, set, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Your Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
-            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
-            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
-            messagingSenderId: "184676228358",
-            appId: "1:184676228358:web:c2b32b68debeeadadfd287"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM", authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com", databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com", projectId: "sri-vishnu-priya-finance-c591f", storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app", messagingSenderId: "184676228358", appId: "1:184676228358:web:c2b32b68debeeadadfd287" };
+        const app = initializeApp(firebaseConfig); const db = getDatabase(app);
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // Set Dates
-        const todayStr = new Date().toLocaleDateString('en-GB'); 
-        const dbDateKey = todayStr.replace(/\//g, '-'); // Ex: 17-11-2026
+        const d = new Date();
+        const todayStr = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
         document.getElementById('entry-date').innerText = todayStr;
-        document.getElementById('print-report-date').innerText = todayStr;
+        
+        let loggedEmp = "", empMap = {}, totalRAssign=0, totalMAssign=0;
 
-        let loggedInEmployee = "";
-        let employeeDataMap = {}; // To store passcodes
-
-        // 1. Fetch Employees for Login Dropdown
-        const execRef = ref(db, 'executives');
-        onValue(execRef, (snapshot) => {
-            const select = document.getElementById('login-emp-name');
-            select.innerHTML = '<option value="">-- Select Your Name --</option>';
-            if (snapshot.exists()) {
-                snapshot.forEach((child) => {
-                    const data = child.val();
-                    employeeDataMap[data.name] = data.passcode;
-                    select.innerHTML += `<option value="${data.name}">${data.name}</option>`;
-                });
-            } else {
-                select.innerHTML = '<option value="">No Executives Found</option>';
-            }
+        // Fetch Executives
+        onValue(ref(db, 'Executives'), (snap) => {
+            const sel = document.getElementById('login-emp-name'); sel.innerHTML = '<option value="">--Select--</option>';
+            if(snap.exists()) { snap.forEach(ch => { empMap[ch.val().name] = ch.val().passcode; sel.innerHTML += `<option value="${ch.val().name}">${ch.val().name}</option>`; }); }
         });
 
-        // 2. Authentication Logic
-        window.authenticateEmployee = function() {
-            const name = document.getElementById('login-emp-name').value;
-            const pass = document.getElementById('login-passcode').value;
-
-            if (name === "" || pass === "") {
-                alert("Please select Name and enter Passcode!");
-                return;
-            }
-
-            if (employeeDataMap[name] === pass) {
-                loggedInEmployee = name;
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('dashboard-screen').style.display = 'flex';
-                document.getElementById('display-emp-name').innerText = name;
-                document.getElementById('print-emp-name').innerText = name;
-                
-                // Fetch specific data for this employee
+        window.authEmp = function() {
+            const n = document.getElementById('login-emp-name').value, p = document.getElementById('login-passcode').value;
+            if(empMap[n] === p) {
+                loggedEmp = n; document.getElementById('login-screen').style.display='none'; document.getElementById('dashboard-screen').style.display='block';
+                document.getElementById('display-emp-name').innerText = n; document.getElementById('print-emp-name').innerText = n;
                 loadAssignedAccounts();
-                loadDailyPerformance();
-            } else {
-                alert("Incorrect Passcode! Please try again.");
-            }
-        };
+            } else alert("Invalid Passcode!");
+        }
 
-        // 3. Load Assigned Accounts dynamically
         function loadAssignedAccounts() {
-            // TL ప్యానెల్ నుండి 'assignments/EmployeeName' లో డేటా సేవ్ అవుతుంది అని భావిద్దాం.
-            const assignRef = ref(db, 'assignments/' + loggedInEmployee);
-            onValue(assignRef, (snapshot) => {
-                const tbody = document.getElementById('assigned-accounts-body');
-                tbody.innerHTML = '';
-                let totalRegAssigned = 0;
-                let totalMatAssigned = 0;
-
-                if(snapshot.exists()) {
-                    snapshot.forEach((child) => {
-                        const acc = child.val();
-                        const accId = child.key;
-                        
-                        // Count assignments for Report Cards
-                        if(acc.type === 'REGULAR') totalRegAssigned++;
-                        else totalMatAssigned++;
-
-                        tbody.innerHTML += `
-                            <tr>
-                                <td><strong>${acc.accountNo || accId}</strong></td>
-                                <td>${acc.type}</td>
-                                <td>${acc.ins || acc.year}</td>
-                                <td>
-                                    <select class="input-sm" id="status-${accId}">
-                                        <option value="">Select</option>
-                                        <option value="LOCK">LOCK</option>
-                                        <option value="PCR">PCR</option>
-                                        <option value="QR">QR</option>
-                                        <option value="OP">OP</option>
-                                        <option value="SEEZING">SEEZING</option>
-                                        <option value="OP'S">OP'S</option>
-                                    </select>
-                                </td>
-                                <td><input type="number" class="input-sm" id="amount-${accId}" placeholder="0"></td>
-                                <td><button class="btn-submit" onclick="submitPerformance('${accId}', '${acc.type}')">Submit</button></td>
-                            </tr>
-                        `;
+            onValue(ref(db, `Assignments/${loggedEmp}`), (snap) => {
+                const tbody = document.getElementById('assigned-accounts-body'); tbody.innerHTML=''; totalRAssign=0; totalMAssign=0;
+                if(snap.exists()) {
+                    snap.forEach(ch => {
+                        const a = ch.val(), id = ch.key;
+                        a.type==='REGULAR' ? totalRAssign++ : totalMAssign++;
+                        let insVal = a.type==='REGULAR' ? `${a.installments} INS` : `${a.installments} INS (Yr: ${a.year})`;
+                        tbody.innerHTML += `<tr><td><strong>${a.accountNo}</strong></td><td>${a.type}</td><td>${insVal}</td>
+                            <td><select id="st-${id}" class="input-sm"><option value="">Select</option><option value="LOCK">LOCK</option><option value="PCR">PCR</option><option value="OP">OP</option><option value="SEEZING">SEEZING</option></select></td>
+                            <td><input type="number" id="am-${id}" class="input-sm" placeholder="0"></td>
+                            <td><button class="btn-submit" onclick="submitPerf('${id}','${a.type}','${a.installments} INS')">Submit</button></td></tr>`;
                     });
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No accounts assigned for you currently.</td></tr>';
                 }
-
-                // Update Report Assigned Cards
-                document.getElementById('r-assign').innerText = totalRegAssigned;
-                document.getElementById('m-assign').innerText = totalMatAssigned;
             });
         }
 
-        // 4. Submit Performance to Firebase
-        window.submitPerformance = function(accId, type) {
-            const status = document.getElementById(`status-${accId}`).value;
-            const amount = document.getElementById(`amount-${accId}`).value;
-
-            if(!status) { alert("Please select a status!"); return; }
-
-            const perfRef = ref(db, `daily_performance/${dbDateKey}/${loggedInEmployee}/${accId}`);
-            set(perfRef, {
-                accountNo: accId,
-                type: type,
-                status: status,
-                amount: amount || 0,
-                timestamp: new Date().getTime()
-            }).then(() => {
-                alert("Status Updated Successfully!");
-            }).catch((err) => alert("Error: " + err));
+        window.submitPerf = function(id, type, ins) {
+            const st = document.getElementById(`st-${id}`).value, am = document.getElementById(`am-${id}`).value;
+            if(!st) return alert("Select Status");
+            set(ref(db, `DailyReports/${todayStr}/${loggedEmp}/${id}`), { accountNo: document.getElementById(`st-${id}`).parentElement.parentElement.cells[0].innerText, type: type, ins: ins, status: st, amount: am||0 }).then(()=>alert("✅ Submited!"));
         }
 
-        // 5. Load Performance Report Data (Real-time Counts)
-        function loadDailyPerformance() {
-            const perfRef = ref(db, `daily_performance/${dbDateKey}/${loggedInEmployee}`);
+        // Employee Report with specific Date Selection
+        window.fetchEmployeeReport = function() {
+            const dateInput = document.getElementById('report-date-select').value;
+            if(!dateInput) return alert("Please select a date to view report!");
             
-            onValue(perfRef, (snapshot) => {
-                const tbody = document.getElementById('submitted-performance-body');
-                tbody.innerHTML = '';
+            const selDate = new Date(dateInput);
+            const dbDate = `${selDate.getDate().toString().padStart(2,'0')}-${(selDate.getMonth()+1).toString().padStart(2,'0')}-${selDate.getFullYear()}`;
+            document.getElementById('print-report-date').innerText = dbDate;
+            document.getElementById('print-header-div').style.display = 'block';
+
+            onValue(ref(db, `DailyReports/${dbDate}/${loggedEmp}`), (snap) => {
+                const tbody = document.getElementById('submitted-performance-body'); tbody.innerHTML='';
+                let rC={c:0,l:0,p:0,o:0,s:0}, mC={c:0,l:0,p:0,o:0,s:0};
                 
-                // Counters
-                let counters = {
-                    REGULAR: { comp:0, lock:0, pcr:0, op:0, seez:0 },
-                    MATURED: { comp:0, lock:0, pcr:0, op:0, seez:0 }
-                };
-
-                if(snapshot.exists()) {
-                    snapshot.forEach((child) => {
-                        const data = child.val();
-                        const t = data.type; // REGULAR or MATURED
-                        
-                        // Update Table
-                        tbody.innerHTML += `
-                            <tr>
-                                <td><strong>${data.accountNo}</strong></td>
-                                <td>${data.type}</td>
-                                <td><span style="color:var(--secondary); font-weight:600;">${data.status}</span></td>
-                                <td>₹ ${data.amount}</td>
-                            </tr>
-                        `;
-
-                        // Update Counters
-                        if(counters[t]) {
-                            counters[t].comp++;
-                            if(data.status === 'LOCK') counters[t].lock++;
-                            if(data.status === 'PCR') counters[t].pcr++;
-                            if(data.status === 'OP' || data.status === "OP'S") counters[t].op++;
-                            if(data.status === 'SEEZING') counters[t].seez++;
-                        }
+                if(snap.exists()) {
+                    snap.forEach(ch => {
+                        const d = ch.val(), t = d.type==='REGULAR'?rC:mC;
+                        t.c++; if(d.status==='LOCK')t.l++; else if(d.status==='PCR')t.p++; else if(d.status==='OP'||d.status==="OP'S")t.o++; else if(d.status==='SEEZING')t.s++;
+                        // NO Action Column Here, INS Included
+                        tbody.innerHTML += `<tr><td><strong>${d.accountNo}</strong></td><td>${d.type}</td><td>${d.ins||'-'}</td><td>${d.status}</td><td>₹${d.amount}</td></tr>`;
                     });
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No entries submitted yet today.</td></tr>';
-                }
+                } else { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No records found for this date.</td></tr>'; }
 
-                // Update UI Cards for REGULAR
-                const rAssign = parseInt(document.getElementById('r-assign').innerText) || 0;
-                document.getElementById('r-comp').innerText = counters.REGULAR.comp;
-                document.getElementById('r-bal').innerText = Math.max(0, rAssign - counters.REGULAR.comp);
-                document.getElementById('r-lock').innerText = counters.REGULAR.lock;
-                document.getElementById('r-pcr').innerText = counters.REGULAR.pcr;
-                document.getElementById('r-op').innerText = counters.REGULAR.op;
-                document.getElementById('r-seez').innerText = counters.REGULAR.seez;
-
-                // Update UI Cards for MATURED
-                const mAssign = parseInt(document.getElementById('m-assign').innerText) || 0;
-                document.getElementById('m-comp').innerText = counters.MATURED.comp;
-                document.getElementById('m-bal').innerText = Math.max(0, mAssign - counters.MATURED.comp);
-                document.getElementById('m-lock').innerText = counters.MATURED.lock;
-                document.getElementById('m-pcr').innerText = counters.MATURED.pcr;
-                document.getElementById('m-op').innerText = counters.MATURED.op;
-                document.getElementById('m-seez').innerText = counters.MATURED.seez;
+                document.getElementById('r-cards').innerHTML = bCard(totalRAssign, rC);
+                document.getElementById('m-cards').innerHTML = bCard(totalMAssign, mC);
             });
         }
+        function bCard(a,c){ return `<div class="stat-card"><h5>Assigned</h5><div class="val">${a}</div></div><div class="stat-card"><h5>Completed</h5><div class="val">${c.c}</div></div><div class="stat-card"><h5>Balance</h5><div class="val">${Math.max(0,a-c.c)}</div></div><div class="stat-card"><h5>LOCK</h5><div class="val">${c.l}</div></div><div class="stat-card"><h5>PCR</h5><div class="val">${c.p}</div></div><div class="stat-card"><h5>OP</h5><div class="val">${c.o}</div></div><div class="stat-card"><h5>SEEZING</h5><div class="val">${c.s}</div></div>`; }
     </script>
-
-    <!-- UI Tab Switch Logic -->
     <script>
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
-            
-            // Print CSS control
-            if(tabId === 'performance-report') {
-                document.getElementById('print-header-div').style.display = 'block';
-            } else {
-                document.getElementById('print-header-div').style.display = 'none';
-            }
-        }
+        function switchTab(id, btn) { document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); btn.classList.add('active'); }
     </script>
-
 </body>
 </html>
