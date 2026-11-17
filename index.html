@@ -3,260 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Panel - Sri Vishnu Priya Finance</title>
+    <title>Employee Portal - Sri Vishnu Priya Finance</title>
     <style>
-        /* ప్రొఫెషనల్ CSS డిజైన్ */
+        /* పక్కా ప్రీమియం కార్పొరేట్ డిజైన్ */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
         :root {
-            --primary-color: #1a365d;
-            --secondary-color: #2b6cb0;
-            --accent-color: #ed8936;
-            --bg-color: #f7fafc;
-            --text-color: #2d3748;
-            --border-color: #e2e8f0;
+            --primary: #0f172a;    /* Deep Slate */
+            --secondary: #2563eb;  /* Royal Blue */
+            --bg-color: #f1f5f9;   /* Light Gray */
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #16a34a;
+            --danger: #dc2626;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-dark);
         }
 
-        /* Login Screen */
+        /* --- LOGIN SCREEN --- */
         #login-screen {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
         .login-box {
-            background: white;
+            background: var(--card-bg);
             padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
             width: 100%;
-            max-width: 400px;
-            text-align: center;
+            max-width: 380px;
         }
         .login-box h2 {
-            color: var(--primary-color);
-            margin-top: 0;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 10px;
-        }
-
-        /* Dashboard Layout */
-        #dashboard-screen {
-            display: none;
-            display: flex;
-        }
-        .sidebar {
-            width: 250px;
-            background-color: var(--primary-color);
-            color: white;
-            min-height: 100vh;
-            padding-top: 20px;
-            position: fixed;
-        }
-        .sidebar h2 {
+            margin: 0 0 25px 0;
+            color: var(--primary);
             text-align: center;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #2b6cb0;
-            padding-bottom: 15px;
+            font-weight: 700;
         }
-        .sidebar button {
-            display: block;
-            width: 100%;
-            background: none;
-            border: none;
-            color: white;
-            padding: 15px 20px;
-            text-align: left;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
+        .form-group select, .form-group input {
+            width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box; outline: none;
         }
-        .sidebar button:hover, .sidebar button.active {
-            background-color: var(--secondary-color);
-            border-left: 4px solid var(--accent-color);
-        }
+        .form-group select:focus, .form-group input:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .btn-full { width: 100%; padding: 12px; background: var(--secondary); color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-full:hover { background: #1d4ed8; }
 
-        /* Main Content */
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-            width: calc(100% - 250px);
-        }
-        .tab-section {
-            display: none;
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .tab-section.active {
-            display: block;
-        }
-        h3.section-title {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 10px;
-            margin-top: 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Forms & Inputs */
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-        button.btn-primary {
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
-        button.btn-primary:hover {
-            background-color: var(--primary-color);
-        }
-        button.btn-submit {
-            background-color: #38a169;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button.btn-print {
-            background-color: #e53e3e;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            font-size: 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
+        /* --- DASHBOARD LAYOUT --- */
+        #dashboard-screen { display: none; min-height: 100vh; }
+        .sidebar { width: 260px; background: var(--primary); color: white; position: fixed; height: 100vh; display: flex; flex-direction: column; }
+        .brand { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .brand h2 { margin: 0; font-size: 1.1rem; }
+        .brand p { margin: 5px 0 0 0; color: #94a3b8; font-size: 0.85rem; }
+        .tab-btn { background: transparent; color: #cbd5e1; border: none; padding: 15px 25px; text-align: left; font-size: 0.95rem; font-weight: 500; cursor: pointer; border-left: 4px solid transparent; transition: 0.2s; }
+        .tab-btn:hover, .tab-btn.active { background: rgba(255,255,255,0.05); color: white; border-left-color: var(--secondary); }
+        .logout-btn { margin-top: auto; background: #991b1b; color: white; border: none; padding: 15px; cursor: pointer; font-weight: 600; }
+        
+        .main-content { margin-left: 260px; padding: 30px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
+        .section-header h3 { margin: 0; color: var(--primary); font-size: 1.4rem; }
+        
+        /* Buttons */
+        .btn-print { background: var(--text-dark); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .btn-submit { background: var(--success); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; }
+        
         /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table th, table td {
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            text-align: center;
-        }
-        table th {
-            background-color: #edf2f7;
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-        table tbody tr:nth-child(even) {
-            background-color: #f7fafc;
-        }
-        .entry-input {
-            padding: 6px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 90%;
-        }
+        .table-container { background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8fafc; padding: 15px; text-align: left; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+        tr:last-child td { border-bottom: none; }
+        .input-sm { padding: 8px; border: 1px solid var(--border); border-radius: 4px; width: 120px; }
+        
+        /* Summary Cards */
+        .cards-wrapper { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px; }
+        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border); flex: 1; min-width: 120px; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .stat-card h5 { margin: 0 0 10px 0; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; }
+        .stat-card .val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
 
-        /* Dashboard Cards */
-        .cards-container {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-            margin-bottom: 25px;
-        }
-        .card {
-            background: #fff;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            flex: 1;
-            min-width: 100px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-top: 4px solid var(--secondary-color);
-        }
-        .card h4 {
-            margin: 0 0 5px 0;
-            font-size: 0.75rem;
-            color: #718096;
-            text-transform: uppercase;
-        }
-        .card .number {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        /* Print Settings (Classy GM Report Look) */
+        /* --- PRINT STYLES --- */
         @media print {
-            body {
-                background-color: white;
-            }
-            .sidebar, .no-print {
-                display: none !important;
-            }
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-                padding: 0;
-            }
-            .tab-section {
-                box-shadow: none;
-                border: none;
-                padding: 0;
-            }
-            .print-header {
-                text-align: center;
-                border-bottom: 2px solid #000;
-                margin-bottom: 20px;
-                padding-bottom: 10px;
-            }
-            .print-header h2 {
-                margin: 0 0 10px 0;
-                color: #000;
-            }
-            .cards-container {
-                page-break-inside: avoid;
-            }
-            .card {
-                border: 1px solid #000;
-                border-top: 1px solid #000;
-                box-shadow: none;
-            }
-            table th {
-                background-color: #f0f0f0 !important;
-                -webkit-print-color-adjust: exact;
-            }
+            body { background: white; }
+            .sidebar, .no-print { display: none !important; }
+            .main-content { margin-left: 0; padding: 0; }
+            .print-header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 20px; padding-bottom: 10px; }
+            .print-header h2 { margin: 0; font-size: 1.5rem; }
+            .stat-card { border: 1px solid #000; box-shadow: none; padding: 10px; }
+            table th { background: #eee !important; -webkit-print-color-adjust: exact; }
+            table th, table td { border: 1px solid #ccc; padding: 8px; }
         }
     </style>
 </head>
@@ -267,206 +113,342 @@
         <div class="login-box">
             <h2>Employee Login</h2>
             <div class="form-group">
-                <label>Select Name</label>
-                <select id="emp-name">
-                    <option value="">-- Select Employee --</option>
-                    <option value="B. RAJESH">B. RAJESH</option>
-                    <option value="P. VEERABABU">P. VEERABABU</option>
+                <label>Select Your Name</label>
+                <select id="login-emp-name">
+                    <option value="">Loading Employees...</option>
+                    <!-- Firebase nundi dynamically load avuthayi -->
                 </select>
             </div>
             <div class="form-group">
                 <label>Passcode</label>
-                <input type="password" id="emp-passcode" placeholder="Enter TL Assigned Passcode">
+                <input type="password" id="login-passcode" placeholder="Enter assigned passcode">
             </div>
-            <button class="btn-primary" onclick="processLogin()">PROCESS</button>
+            <button class="btn-full" onclick="authenticateEmployee()">LOG IN</button>
         </div>
     </div>
 
     <!-- 2. DASHBOARD SCREEN -->
-    <div id="dashboard-screen" style="display: none;">
+    <div id="dashboard-screen">
         
         <!-- Sidebar -->
         <div class="sidebar no-print">
-            <h2>Sri Vishnu Priya<br>Employee Panel</h2>
-            <p style="text-align: center; font-size: 0.9rem; margin-top:-15px; color:#a0aec0;" id="display-emp-name">Name</p>
-            <button class="tab-link active" onclick="openTab(event, 'daily-entry')">1. DAILY PERFORMANCE ENTRY</button>
-            <button class="tab-link" onclick="openTab(event, 'performance-report')">2. PERFORMANCE REPORT</button>
-            <button class="tab-link" onclick="logout()" style="margin-top: 50px; background-color: #c53030;">LOGOUT</button>
+            <div class="brand">
+                <h2>Employee Portal</h2>
+                <p id="display-emp-name">Loading...</p>
+            </div>
+            <button class="tab-btn active" onclick="switchTab('daily-entry', this)">DAILY PERFORMANCE ENTRY</button>
+            <button class="tab-btn" onclick="switchTab('performance-report', this)">PERFORMANCE REPORT</button>
+            <button class="logout-btn" onclick="location.reload()">LOGOUT</button>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
             
             <!-- A. DAILY PERFORMANCE ENTRY -->
-            <div id="daily-entry" class="tab-section active">
-                <h3 class="section-title">DAILY PERFORMANCE ENTRY <span style="font-size:0.9rem; color:#718096;" id="current-date"></span></h3>
-                <p class="no-print">Update your assigned accounts status and amount below.</p>
+            <div id="daily-entry" class="tab-content active">
+                <div class="section-header no-print">
+                    <div>
+                        <h3>DAILY PERFORMANCE ENTRY</h3>
+                        <span style="color:var(--text-muted); font-size:0.9rem;">Date: <span id="entry-date"></span></span>
+                    </div>
+                </div>
                 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Account No</th>
-                            <th>Type</th>
-                            <th>INS</th>
-                            <th>Status</th>
-                            <th>Amount</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Dummy Data Row 1 -->
-                        <tr>
-                            <td><strong>10012</strong></td>
-                            <td>Regular</td>
-                            <td>5 INS</td>
-                            <td>
-                                <select class="entry-input">
-                                    <option value="">Select</option>
-                                    <option value="LOCK">LOCK</option>
-                                    <option value="PCR">PCR</option>
-                                    <option value="QR">QR</option>
-                                    <option value="OP">OP</option>
-                                    <option value="SEEZING">SEEZING</option>
-                                    <option value="OP'S">OP'S</option>
-                                </select>
-                            </td>
-                            <td><input type="number" class="entry-input" placeholder="Amount"></td>
-                            <td><button class="btn-submit" onclick="alert('Status Updated!')">Submit</button></td>
-                        </tr>
-                        <!-- Dummy Data Row 2 -->
-                        <tr>
-                            <td><strong>M-509</strong></td>
-                            <td>Matured</td>
-                            <td>4 INS</td>
-                            <td>
-                                <select class="entry-input">
-                                    <option value="">Select</option>
-                                    <option value="LOCK">LOCK</option>
-                                    <option value="PCR">PCR</option>
-                                    <option value="QR">QR</option>
-                                    <option value="OP">OP</option>
-                                    <option value="SEEZING">SEEZING</option>
-                                    <option value="OP'S">OP'S</option>
-                                </select>
-                            </td>
-                            <td><input type="number" class="entry-input" placeholder="Amount"></td>
-                            <td><button class="btn-submit" onclick="alert('Status Updated!')">Submit</button></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Account No</th>
+                                <th>Type</th>
+                                <th>INS / Year</th>
+                                <th>Status</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assigned-accounts-body">
+                            <tr><td colspan="6" style="text-align:center; color:gray;">Loading assigned accounts from Firebase...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <!-- B. PERFORMANCE REPORT (GM FORMAT) -->
-            <div id="performance-report" class="tab-section">
-                <h3 class="section-title no-print">
-                    PERFORMANCE REPORT
+            <!-- B. PERFORMANCE REPORT -->
+            <div id="performance-report" class="tab-content">
+                <div class="section-header no-print">
+                    <h3>PERFORMANCE REPORT</h3>
                     <button class="btn-print" onclick="window.print()">🖨️ PRINT REPORT</button>
-                </h3>
-                
-                <!-- Print Header for GM -->
-                <div class="print-header">
+                </div>
+
+                <!-- Print Header -->
+                <div class="print-header" style="display: none;" id="print-header-div">
                     <h2>DAILY PERFORMANCE REPORT</h2>
                     <p>
-                        <strong>Employee:</strong> <span id="print-emp-name">B. RAJESH</span> &nbsp;&nbsp;|&nbsp;&nbsp; 
-                        <strong>Branch:</strong> TENALI &nbsp;&nbsp;|&nbsp;&nbsp; 
-                        <strong>Date:</strong> <span id="print-date">17-Nov-2026</span>
+                        <strong>Employee:</strong> <span id="print-emp-name"></span> &nbsp;|&nbsp; 
+                        <strong>Date:</strong> <span id="print-report-date"></span>
                     </p>
                 </div>
 
-                <!-- Regular Summary Cards -->
-                <h4 style="margin-bottom: 5px;">REGULAR SUMMARY</h4>
-                <div class="cards-container">
-                    <div class="card"><h4>Assigned</h4><div class="number">22</div></div>
-                    <div class="card"><h4>Completed</h4><div class="number">8</div></div>
-                    <div class="card"><h4>Balance</h4><div class="number">14</div></div>
-                    <div class="card"><h4>LOCK</h4><div class="number">2</div></div>
-                    <div class="card"><h4>PCR</h4><div class="number">3</div></div>
-                    <div class="card"><h4>OP</h4><div class="number">2</div></div>
-                    <div class="card"><h4>SEEZING</h4><div class="number">1</div></div>
+                <h4 style="margin-top:0; color:var(--text-muted);">REGULAR SUMMARY</h4>
+                <div class="cards-wrapper" id="regular-cards">
+                    <div class="stat-card"><h5>Assigned</h5><div class="val" id="r-assign">0</div></div>
+                    <div class="stat-card"><h5>Completed</h5><div class="val" id="r-comp">0</div></div>
+                    <div class="stat-card"><h5>Balance</h5><div class="val" id="r-bal">0</div></div>
+                    <div class="stat-card"><h5>LOCK</h5><div class="val" id="r-lock">0</div></div>
+                    <div class="stat-card"><h5>PCR</h5><div class="val" id="r-pcr">0</div></div>
+                    <div class="stat-card"><h5>OP</h5><div class="val" id="r-op">0</div></div>
+                    <div class="stat-card"><h5>SEEZING</h5><div class="val" id="r-seez">0</div></div>
                 </div>
 
-                <!-- Matured Summary Cards -->
-                <h4 style="margin-bottom: 5px;">MATURED SUMMARY</h4>
-                <div class="cards-container">
-                    <div class="card"><h4>Assigned</h4><div class="number">94</div></div>
-                    <div class="card"><h4>Completed</h4><div class="number">20</div></div>
-                    <div class="card"><h4>Balance</h4><div class="number">74</div></div>
-                    <div class="card"><h4>LOCK</h4><div class="number">5</div></div>
-                    <div class="card"><h4>PCR</h4><div class="number">8</div></div>
-                    <div class="card"><h4>OP</h4><div class="number">7</div></div>
-                    <div class="card"><h4>SEEZING</h4><div class="number">0</div></div>
+                <h4 style="color:var(--text-muted);">MATURED SUMMARY</h4>
+                <div class="cards-wrapper" id="matured-cards">
+                    <div class="stat-card"><h5>Assigned</h5><div class="val" id="m-assign">0</div></div>
+                    <div class="stat-card"><h5>Completed</h5><div class="val" id="m-comp">0</div></div>
+                    <div class="stat-card"><h5>Balance</h5><div class="val" id="m-bal">0</div></div>
+                    <div class="stat-card"><h5>LOCK</h5><div class="val" id="m-lock">0</div></div>
+                    <div class="stat-card"><h5>PCR</h5><div class="val" id="m-pcr">0</div></div>
+                    <div class="stat-card"><h5>OP</h5><div class="val" id="m-op">0</div></div>
+                    <div class="stat-card"><h5>SEEZING</h5><div class="val" id="m-seez">0</div></div>
                 </div>
 
-                <!-- Detailed Collection Table -->
-                <h4 style="margin-top: 20px;">TODAY'S SUBMITTED PERFORMANCE</h4>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Account No</th>
-                            <th>Type</th>
-                            <th>INS</th>
-                            <th>Status</th>
-                            <th>Amount Collected</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>10012</td><td>Regular</td><td>5 INS</td><td>PCR</td><td>5,000</td></tr>
-                        <tr><td>10015</td><td>Regular</td><td>6 INS</td><td>LOCK</td><td>0</td></tr>
-                        <tr><td>M-509</td><td>Matured</td><td>4 INS</td><td>OP</td><td>12,500</td></tr>
-                        <tr><td>M-510</td><td>Matured</td><td>4 INS</td><td>SEEZING</td><td>0</td></tr>
-                    </tbody>
-                </table>
+                <h4 style="color:var(--text-muted); margin-top:30px;">TODAY'S SUBMITTED PERFORMANCE</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Account No</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submitted-performance-body">
+                            <tr><td colspan="4" style="text-align:center; color:gray;">No entries submitted yet today.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
     </div>
 
-    <!-- Script Logic -->
-    <script>
-        // Set Today's Date automatically
-        const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-        document.getElementById('current-date').innerText = today;
-        document.getElementById('print-date').innerText = today;
+    <!-- Firebase SDK Setup -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, get, set, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Login Logic
-        function processLogin() {
-            const name = document.getElementById('emp-name').value;
-            const passcode = document.getElementById('emp-passcode').value;
+        // Your Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287"
+        };
 
-            if(name !== "" && passcode !== "") {
-                // Hide Login, Show Dashboard
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Set Dates
+        const todayStr = new Date().toLocaleDateString('en-GB'); 
+        const dbDateKey = todayStr.replace(/\//g, '-'); // Ex: 17-11-2026
+        document.getElementById('entry-date').innerText = todayStr;
+        document.getElementById('print-report-date').innerText = todayStr;
+
+        let loggedInEmployee = "";
+        let employeeDataMap = {}; // To store passcodes
+
+        // 1. Fetch Employees for Login Dropdown
+        const execRef = ref(db, 'executives');
+        onValue(execRef, (snapshot) => {
+            const select = document.getElementById('login-emp-name');
+            select.innerHTML = '<option value="">-- Select Your Name --</option>';
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    const data = child.val();
+                    employeeDataMap[data.name] = data.passcode;
+                    select.innerHTML += `<option value="${data.name}">${data.name}</option>`;
+                });
+            } else {
+                select.innerHTML = '<option value="">No Executives Found</option>';
+            }
+        });
+
+        // 2. Authentication Logic
+        window.authenticateEmployee = function() {
+            const name = document.getElementById('login-emp-name').value;
+            const pass = document.getElementById('login-passcode').value;
+
+            if (name === "" || pass === "") {
+                alert("Please select Name and enter Passcode!");
+                return;
+            }
+
+            if (employeeDataMap[name] === pass) {
+                loggedInEmployee = name;
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('dashboard-screen').style.display = 'flex';
-                
-                // Set Employee Names in UI
                 document.getElementById('display-emp-name').innerText = name;
                 document.getElementById('print-emp-name').innerText = name;
+                
+                // Fetch specific data for this employee
+                loadAssignedAccounts();
+                loadDailyPerformance();
             } else {
-                alert("Please select Name and enter Passcode!");
+                alert("Incorrect Passcode! Please try again.");
             }
+        };
+
+        // 3. Load Assigned Accounts dynamically
+        function loadAssignedAccounts() {
+            // TL ప్యానెల్ నుండి 'assignments/EmployeeName' లో డేటా సేవ్ అవుతుంది అని భావిద్దాం.
+            const assignRef = ref(db, 'assignments/' + loggedInEmployee);
+            onValue(assignRef, (snapshot) => {
+                const tbody = document.getElementById('assigned-accounts-body');
+                tbody.innerHTML = '';
+                let totalRegAssigned = 0;
+                let totalMatAssigned = 0;
+
+                if(snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        const acc = child.val();
+                        const accId = child.key;
+                        
+                        // Count assignments for Report Cards
+                        if(acc.type === 'REGULAR') totalRegAssigned++;
+                        else totalMatAssigned++;
+
+                        tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${acc.accountNo || accId}</strong></td>
+                                <td>${acc.type}</td>
+                                <td>${acc.ins || acc.year}</td>
+                                <td>
+                                    <select class="input-sm" id="status-${accId}">
+                                        <option value="">Select</option>
+                                        <option value="LOCK">LOCK</option>
+                                        <option value="PCR">PCR</option>
+                                        <option value="QR">QR</option>
+                                        <option value="OP">OP</option>
+                                        <option value="SEEZING">SEEZING</option>
+                                        <option value="OP'S">OP'S</option>
+                                    </select>
+                                </td>
+                                <td><input type="number" class="input-sm" id="amount-${accId}" placeholder="0"></td>
+                                <td><button class="btn-submit" onclick="submitPerformance('${accId}', '${acc.type}')">Submit</button></td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No accounts assigned for you currently.</td></tr>';
+                }
+
+                // Update Report Assigned Cards
+                document.getElementById('r-assign').innerText = totalRegAssigned;
+                document.getElementById('m-assign').innerText = totalMatAssigned;
+            });
         }
 
-        // Logout Logic
-        function logout() {
-            document.getElementById('emp-passcode').value = '';
-            document.getElementById('login-screen').style.display = 'flex';
-            document.getElementById('dashboard-screen').style.display = 'none';
+        // 4. Submit Performance to Firebase
+        window.submitPerformance = function(accId, type) {
+            const status = document.getElementById(`status-${accId}`).value;
+            const amount = document.getElementById(`amount-${accId}`).value;
+
+            if(!status) { alert("Please select a status!"); return; }
+
+            const perfRef = ref(db, `daily_performance/${dbDateKey}/${loggedInEmployee}/${accId}`);
+            set(perfRef, {
+                accountNo: accId,
+                type: type,
+                status: status,
+                amount: amount || 0,
+                timestamp: new Date().getTime()
+            }).then(() => {
+                alert("Status Updated Successfully!");
+            }).catch((err) => alert("Error: " + err));
         }
 
-        // Tab Switching Logic
-        function openTab(evt, tabName) {
-            let i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-section");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].classList.remove("active");
-            }
-            tablinks = document.getElementsByClassName("tab-link");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.className += " active";
+        // 5. Load Performance Report Data (Real-time Counts)
+        function loadDailyPerformance() {
+            const perfRef = ref(db, `daily_performance/${dbDateKey}/${loggedInEmployee}`);
+            
+            onValue(perfRef, (snapshot) => {
+                const tbody = document.getElementById('submitted-performance-body');
+                tbody.innerHTML = '';
+                
+                // Counters
+                let counters = {
+                    REGULAR: { comp:0, lock:0, pcr:0, op:0, seez:0 },
+                    MATURED: { comp:0, lock:0, pcr:0, op:0, seez:0 }
+                };
+
+                if(snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        const data = child.val();
+                        const t = data.type; // REGULAR or MATURED
+                        
+                        // Update Table
+                        tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${data.accountNo}</strong></td>
+                                <td>${data.type}</td>
+                                <td><span style="color:var(--secondary); font-weight:600;">${data.status}</span></td>
+                                <td>₹ ${data.amount}</td>
+                            </tr>
+                        `;
+
+                        // Update Counters
+                        if(counters[t]) {
+                            counters[t].comp++;
+                            if(data.status === 'LOCK') counters[t].lock++;
+                            if(data.status === 'PCR') counters[t].pcr++;
+                            if(data.status === 'OP' || data.status === "OP'S") counters[t].op++;
+                            if(data.status === 'SEEZING') counters[t].seez++;
+                        }
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No entries submitted yet today.</td></tr>';
+                }
+
+                // Update UI Cards for REGULAR
+                const rAssign = parseInt(document.getElementById('r-assign').innerText) || 0;
+                document.getElementById('r-comp').innerText = counters.REGULAR.comp;
+                document.getElementById('r-bal').innerText = Math.max(0, rAssign - counters.REGULAR.comp);
+                document.getElementById('r-lock').innerText = counters.REGULAR.lock;
+                document.getElementById('r-pcr').innerText = counters.REGULAR.pcr;
+                document.getElementById('r-op').innerText = counters.REGULAR.op;
+                document.getElementById('r-seez').innerText = counters.REGULAR.seez;
+
+                // Update UI Cards for MATURED
+                const mAssign = parseInt(document.getElementById('m-assign').innerText) || 0;
+                document.getElementById('m-comp').innerText = counters.MATURED.comp;
+                document.getElementById('m-bal').innerText = Math.max(0, mAssign - counters.MATURED.comp);
+                document.getElementById('m-lock').innerText = counters.MATURED.lock;
+                document.getElementById('m-pcr').innerText = counters.MATURED.pcr;
+                document.getElementById('m-op').innerText = counters.MATURED.op;
+                document.getElementById('m-seez').innerText = counters.MATURED.seez;
+            });
         }
     </script>
+
+    <!-- UI Tab Switch Logic -->
+    <script>
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+            
+            // Print CSS control
+            if(tabId === 'performance-report') {
+                document.getElementById('print-header-div').style.display = 'block';
+            } else {
+                document.getElementById('print-header-div').style.display = 'none';
+            }
+        }
+    </script>
+
 </body>
 </html>
