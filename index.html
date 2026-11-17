@@ -7,32 +7,30 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { font-family: 'Arial', sans-serif; background: #f4f7f6; margin: 0; padding: 15px; color: #333; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 5px solid #003366; }
-        h2 { color: #003366; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 15px; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        body { font-family: 'Arial', sans-serif; background: #eef2f7; margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 5px solid #003366; }
+        h2 { color: #003366; text-align: center; border-bottom: 2px solid #ddd; padding-bottom: 15px; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        h3 { background: #003366; color: white; padding: 10px; margin-top: 25px; border-radius: 3px; font-size: 15px; text-transform: uppercase;}
         label { font-weight: bold; font-size: 13px; color: #555; display: block; margin-top: 15px; }
         input, select { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; font-size: 14px; border-radius: 3px; }
         .btn { padding: 12px; font-size: 14px; font-weight: bold; cursor: pointer; border: none; color: white; width: 100%; margin-top: 20px; text-transform: uppercase; border-radius: 3px; }
         .btn-blue { background: #003366; } .btn-green { background: #28a745; }
         
-        .classic-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
-        .classic-table th { background: #003366; color: white; padding: 12px; text-align: left; border: 1px solid #002244; }
-        .classic-table td { padding: 10px; border: 1px solid #ddd; vertical-align: middle; }
-        .classic-table select, .classic-table input { padding: 6px; margin: 0; width: 100%; }
+        .classic-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; text-align: center; }
+        .classic-table th { background: #003366; color: white; padding: 10px; border: 1px solid #002244; }
+        .classic-table td { padding: 8px; border: 1px solid #ddd; vertical-align: middle; }
+        .classic-table select, .classic-table input { padding: 6px; margin: 0; width: 100%; box-sizing:border-box;}
 
-        .info-bar { background: #e9ecef; padding: 15px; display: flex; justify-content: space-between; font-weight: bold; border-left: 4px solid #003366; margin-bottom: 20px; }
+        .info-bar { background: #e9ecef; padding: 15px; display: flex; justify-content: space-between; font-weight: bold; border-left: 4px solid #003366; margin-bottom: 20px; font-size: 14px;}
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .stat-box { border: 1px solid #ddd; padding: 15px; border-radius: 4px; background: #fff; line-height: 1.8; font-size:14px; }
         
-        /* Dashboard Stats */
-        .stat-box { background: #fff; border: 1px solid #ddd; padding: 15px; text-align: center; flex: 1; border-radius: 4px; }
-        .stat-box .val { font-size: 24px; font-weight: bold; color: #003366; }
-        .stat-box .lbl { font-size: 12px; font-weight: bold; color: #666; text-transform: uppercase; margin-top: 5px; }
-
-        /* Print Styles */
         #print-section { display: none; }
         @media print { 
+            @page { size: A4; margin: 15mm; }
             body * { visibility: hidden; } 
             #print-section, #print-section * { visibility: visible; } 
-            #print-section { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; font-family: Arial, sans-serif;} 
+            #print-section { display: block; position: absolute; left: 0; top: 0; width: 100%; padding: 20px; background:white; font-family: Arial, sans-serif;} 
         }
     </style>
 </head>
@@ -47,9 +45,9 @@
         <button class="btn btn-blue" onclick="verifyLogin()">Proceed to Ledger</button>
     </div>
 
-    <!-- DAILY LEDGER -->
+    <!-- DAILY LEDGER & REPORTS (Clean UI) -->
     <div class="container" id="dashboard-screen" style="display:none;">
-        <h2>Daily Collection Ledger</h2>
+        <h2>Executive Field Portal</h2>
         
         <div class="info-bar">
             <div>Name: <span id="display-name" style="color:#003366;"></span></div>
@@ -57,95 +55,72 @@
             <div>Date: <span id="display-date"></span></div>
         </div>
 
-        <p style="font-size:13px; color:#666;">Update the collection status for your assigned accounts below. Only the accounts you modify will be saved in today's report.</p>
-
+        <!-- Section 1: Entry -->
+        <h3>1. Daily Collection Entry</h3>
+        <p style="font-size:12px; color:#666; margin-top:0;">Only modified statuses will be saved in today's report.</p>
         <div style="overflow-x:auto;">
             <table class="classic-table">
-                <thead><tr><th>Acc No</th><th>Type (Inst/Year)</th><th>Amount</th><th>Status</th><th>Collected (₹)</th></tr></thead>
+                <thead><tr><th>Acc No</th><th>Type (Inst/Year)</th><th>Status</th><th>Amount (₹)</th></tr></thead>
                 <tbody id="accounts-tbody"></tbody>
             </table>
         </div>
-
         <button class="btn btn-green" onclick="submitDailyReport()">Save & Print Today's Report</button>
 
-        <!-- SEPARATOR FOR REPORT -->
-        <hr style="margin: 40px 0; border: 0; border-top: 2px dashed #ccc;">
-
-        <!-- EXECUTIVE REPORT SECTION -->
-        <h2 style="margin-top:0;">My Performance Report</h2>
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <div style="flex:1"><label>From Date:</label><input type="date" id="exec-from-date"></div>
-            <div style="flex:1"><label>To Date:</label><input type="date" id="exec-to-date"></div>
+        <!-- Section 2: Report -->
+        <h3 style="margin-top:40px;">2. My Performance Report</h3>
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1"><label style="margin-top:0;">From Date:</label><input type="date" id="exec-from-date"></div>
+            <div style="flex:1"><label style="margin-top:0;">To Date:</label><input type="date" id="exec-to-date"></div>
         </div>
-        <button class="btn btn-blue" onclick="fetchMyReport()" style="margin-top:0;">Search My Data</button>
+        <button class="btn btn-blue" onclick="fetchMyReport()">Search My Data</button>
 
-        <div id="my-report-data" style="display:none; margin-top:20px;">
-            <div style="display:flex; gap:10px; margin-bottom: 20px;">
-                <div class="stat-box"><div class="val" id="e-assigned">0</div><div class="lbl">Total Assigned</div></div>
-                <div class="stat-box"><div class="val" id="e-completed" style="color:#28a745;">0</div><div class="lbl">Completed (In Range)</div></div>
-                <div class="stat-box"><div class="val" id="e-pending" style="color:#dc3545;">0</div><div class="lbl">Total Balance</div></div>
-            </div>
-
-            <div style="display:flex; gap:10px;">
-                <div class="stat-box" style="background:#e6f2ff; border-color:#b3d4fc;">
+        <div id="my-report-data" style="display:none;">
+            <div class="stat-grid">
+                <div class="stat-box" style="border-top:4px solid #0056b3; background:#e6f2ff;">
                     <h4 style="margin:0 0 10px 0; color:#0056b3;">REGULAR ACCOUNTS</h4>
-                    <div style="font-size:14px; line-height:1.8;">
-                        Assigned: <span id="e-reg-ass" style="font-weight:bold;">0</span><br>
-                        Completed: <span id="e-reg-com" style="font-weight:bold; color:#28a745;">0</span><br>
-                        Balance: <span id="e-reg-bal" style="font-weight:bold; color:#dc3545;">0</span>
-                    </div>
+                    Assigned: <span id="e-reg-ass" style="font-weight:bold;">0</span><br>
+                    Completed: <span id="e-reg-com" style="font-weight:bold; color:#28a745;">0</span><br>
+                    <span style="font-weight:bold; color:#dc3545;">Balance: <span id="e-reg-bal">0</span></span>
                 </div>
-                <div class="stat-box" style="background:#fef2f2; border-color:#fecaca;">
+                <div class="stat-box" style="border-top:4px solid #dc3545; background:#fef2f2;">
                     <h4 style="margin:0 0 10px 0; color:#dc2626;">MATURED ACCOUNTS</h4>
-                    <div style="font-size:14px; line-height:1.8;">
-                        Assigned: <span id="e-mat-ass" style="font-weight:bold;">0</span><br>
-                        Completed: <span id="e-mat-com" style="font-weight:bold; color:#28a745;">0</span><br>
-                        Balance: <span id="e-mat-bal" style="font-weight:bold; color:#dc3545;">0</span>
-                    </div>
+                    Assigned: <span id="e-mat-ass" style="font-weight:bold;">0</span><br>
+                    Completed: <span id="e-mat-com" style="font-weight:bold; color:#28a745;">0</span><br>
+                    <span style="font-weight:bold; color:#dc3545;">Balance: <span id="e-mat-bal">0</span></span>
                 </div>
             </div>
-            
-            <h3 style="text-align:center; color:#003366; border:1px solid #ccc; padding:15px; margin-top:20px; background:#fff;">
+            <h3 style="text-align:center; background:#fff; color:#003366; border:2px solid #28a745; padding:15px; margin-top:15px;">
                 Total Collected Amount: <span id="e-total-amt" style="color:#28a745;">₹ 0</span>
             </h3>
         </div>
     </div>
 
-    <!-- HIDDEN PRINT AREA -->
+    <!-- PRINT AREA -->
     <div id="print-section"></div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI", databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com", projectId: "sri-vishnu-priya-finance-c591f", storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app", appId: "1:184676228358:android:7ef47b55ab678bb0dfd287" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        
-        let currentExec = "", currentBranch = "", currentDate = ""; 
-        let assignedData = {};
+        let currentExec = "", currentBranch = "", currentDate = ""; let assignedData = {};
 
         document.getElementById('login-date').valueAsDate = new Date();
         document.getElementById('exec-from-date').valueAsDate = new Date();
         document.getElementById('exec-to-date').valueAsDate = new Date();
 
         db.ref('Executives').on('value', snap => {
-            let dropdown = document.getElementById('login-name');
-            dropdown.innerHTML = '<option value="">-- Select --</option>';
+            let dropdown = document.getElementById('login-name'); dropdown.innerHTML = '<option value="">-- Select --</option>';
             if(snap.exists()){ snap.forEach(child => { dropdown.innerHTML += `<option value="${child.key}">${child.key}</option>`; }); }
         });
 
         function verifyLogin() {
-            let date = document.getElementById('login-date').value;
-            let name = document.getElementById('login-name').value;
-            let pin = document.getElementById('login-pin').value;
+            let date = document.getElementById('login-date').value; let name = document.getElementById('login-name').value; let pin = document.getElementById('login-pin').value;
             if(!name || !pin) return alert("Enter Name and PIN");
-
             db.ref('Executives/' + name).once('value').then(snap => {
                 if(snap.exists() && snap.val().pin === pin) {
                     currentExec = name; currentDate = date; currentBranch = snap.val().branch || "N/A";
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('dashboard-screen').style.display = 'block';
-                    document.getElementById('display-name').innerText = name;
-                    document.getElementById('display-branch').innerText = currentBranch;
-                    document.getElementById('display-date').innerText = date.split('-').reverse().join('-');
+                    document.getElementById('login-screen').style.display = 'none'; document.getElementById('dashboard-screen').style.display = 'block';
+                    document.getElementById('display-name').innerText = name; document.getElementById('display-branch').innerText = currentBranch; document.getElementById('display-date').innerText = date.split('-').reverse().join('-');
                     fetchAssignedAccounts();
                 } else { alert("Incorrect Passcode!"); }
             });
@@ -153,17 +128,15 @@
 
         function fetchAssignedAccounts() {
             db.ref(`Assignments/${currentExec}`).once('value').then(snap => {
-                let tbody = document.getElementById('accounts-tbody');
-                tbody.innerHTML = '';
+                let tbody = document.getElementById('accounts-tbody'); tbody.innerHTML = '';
                 if(snap.exists()) {
                     assignedData = snap.val(); 
                     Object.values(assignedData).forEach((acc) => {
                         let color = acc.type === "Regular" ? "color:blue;" : "color:red;";
                         tbody.innerHTML += `
                             <tr>
-                                <td style="font-weight:bold; font-size:14px;">${acc.accNo}</td>
+                                <td style="font-weight:bold;">${acc.accNo}</td>
                                 <td><span style="font-weight:bold; ${color}">${acc.type}</span><br><small style="color:#666;">(${acc.installments})</small></td>
-                                <td style="font-weight:bold;">₹${acc.targetAmt}</td>
                                 <td>
                                     <select id="status-${acc.accNo}">
                                         <option value="Pending">Pending</option>
@@ -174,50 +147,35 @@
                                         <option value="Seizing">Seizing</option>
                                     </select>
                                 </td>
-                                <td><input type="number" id="amt-${acc.accNo}" placeholder="₹ Amt"></td>
-                            </tr>
-                        `;
+                                <td><input type="number" id="amt-${acc.accNo}" placeholder="₹"></td>
+                            </tr>`;
                     });
-                } else {
-                    tbody.innerHTML = `<tr><td colspan="5" style="color:red; font-weight:bold; text-align:center;">No Active Assignments found from TL.</td></tr>`;
-                }
+                } else { tbody.innerHTML = `<tr><td colspan="4" style="color:red; font-weight:bold;">No Assignments found.</td></tr>`; }
             });
         }
 
         function submitDailyReport() {
             if(Object.keys(assignedData).length === 0) return alert("No assignments to submit.");
-            
-            let saveDetails = {};
-            let count = 0; let totalAmt = 0;
-
+            let saveDetails = {}; let count = 0; let totalAmt = 0;
             Object.values(assignedData).forEach(acc => {
                 let status = document.getElementById(`status-${acc.accNo}`).value;
                 let amt = parseFloat(document.getElementById(`amt-${acc.accNo}`).value) || 0;
-                
                 if(status !== "Pending") {
-                    saveDetails[acc.accNo] = {
-                        accNo: acc.accNo,
-                        type: acc.type,
-                        inst: acc.installments,
-                        status: status,
-                        amt: amt
-                    };
-                    count++;
-                    totalAmt += amt;
+                    saveDetails[acc.accNo] = { accNo: acc.accNo, type: acc.type, inst: acc.installments, status: status, amt: amt };
+                    count++; totalAmt += amt;
                 }
             });
 
-            if(count === 0) return alert("Please update at least one account status before submitting.");
-
+            if(count === 0) return alert("Update at least one account status before saving.");
             db.ref(`DailyReports/${currentDate}/${currentExec}/details`).update(saveDetails).then(() => {
-                alert("Collection Submitted Successfully! Generating Print...");
+                alert("Collection Submitted Successfully! Printing...");
                 generatePrint(saveDetails, totalAmt);
             });
         }
 
         function generatePrint(detailsObj, grandTotal) {
             let html = `
-                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; font-family:Arial, sans-serif;">
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px;">
                     <span style="flex:1;">Name: ${currentExec}<br>Branch: ${currentBranch}</span>
                     <span style="flex:1; text-align:center; font-size:18px; text-transform:uppercase;">DAILY COLLECTION REPORT</span>
                     <span style="flex:1; text-align:right;">Date: ${currentDate.split('-').reverse().join('-')}</span>
@@ -236,36 +194,23 @@
                     <td style="border:1px solid #000; padding:8px; font-weight:bold; color:${color};">${item.type}</td>
                     <td style="border:1px solid #000; padding:8px;"><b>${item.accNo}</b> <small>(${item.inst})</small></td>
                     <td style="border:1px solid #000; padding:8px; font-weight:bold;">${item.status}</td>
-                    <td style="border:1px solid #000; padding:8px;">${item.status === 'Seizing' ? '-' : '₹' + item.amt}</td>
+                    <td style="border:1px solid #000; padding:8px;">${item.status === 'Seizing' ? '-' : '₹' + item.amt.toLocaleString('en-IN')}</td>
                 </tr>`;
             });
+            html += `<tr style="background:#e9ecef; font-weight:bold;"><td colspan="3" style="border:1px solid #000; padding:10px; text-align:right;">Total Collected Amount:</td><td style="border:1px solid #000; padding:10px;">₹ ${grandTotal.toLocaleString('en-IN')}</td></tr></table>`;
 
-            html += `<tr style="background:#e9ecef; font-weight:bold;"><td colspan="3" style="border:1px solid #000; padding:10px; text-align:right;">Total Collected Amount:</td><td style="border:1px solid #000; padding:10px;">₹ ${grandTotal}</td></tr>`;
-            html += `</table>`;
-
-            document.getElementById('print-section').innerHTML = html;
-            window.print();
-            
-            setTimeout(() => { window.location.reload(); }, 1000);
+            document.getElementById('print-section').innerHTML = html; window.print();
+            setTimeout(() => { window.location.reload(); }, 1000); // Reloads cleanly
         }
 
         async function fetchMyReport() {
-            let fromD = document.getElementById('exec-from-date').value;
-            let toD = document.getElementById('exec-to-date').value;
-            
+            let fromD = document.getElementById('exec-from-date').value; let toD = document.getElementById('exec-to-date').value;
             if(!fromD || !toD) return alert("Select Dates!");
-
-            let assignSnap = await db.ref(`Assignments/${currentExec}`).once('value');
-            let reportSnap = await db.ref('DailyReports').once('value');
+            let assignSnap = await db.ref(`Assignments/${currentExec}`).once('value'); let reportSnap = await db.ref('DailyReports').once('value');
             
             let regAssigned = 0, matAssigned = 0, regCompleted = 0, matCompleted = 0, grandAmt = 0;
             
-            if(assignSnap.exists()) {
-                assignSnap.forEach(aNode => {
-                    if(aNode.val().type === 'Regular') regAssigned++; else matAssigned++;
-                });
-            }
-
+            if(assignSnap.exists()) { assignSnap.forEach(aNode => { if(aNode.val().type === 'Regular') regAssigned++; else matAssigned++; }); }
             if(reportSnap.exists()) {
                 reportSnap.forEach(dateNode => {
                     if(dateNode.key >= fromD && dateNode.key <= toD && dateNode.hasChild(currentExec)) {
@@ -282,24 +227,11 @@
                 });
             }
 
-            let totalAssigned = regAssigned + matAssigned;
-            let totalCompleted = regCompleted + matCompleted;
-
-            document.getElementById('e-assigned').innerText = totalAssigned;
-            document.getElementById('e-completed').innerText = totalCompleted;
-            document.getElementById('e-pending').innerText = totalAssigned - totalCompleted;
-
-            document.getElementById('e-reg-ass').innerText = regAssigned;
-            document.getElementById('e-reg-com').innerText = regCompleted;
-            document.getElementById('e-reg-bal').innerText = regAssigned - regCompleted;
-
-            document.getElementById('e-mat-ass').innerText = matAssigned;
-            document.getElementById('e-mat-com').innerText = matCompleted;
-            document.getElementById('e-mat-bal').innerText = matAssigned - matCompleted;
-
+            document.getElementById('e-reg-ass').innerText = regAssigned; document.getElementById('e-reg-com').innerText = regCompleted; document.getElementById('e-reg-bal').innerText = regAssigned - regCompleted;
+            document.getElementById('e-mat-ass').innerText = matAssigned; document.getElementById('e-mat-com').innerText = matCompleted; document.getElementById('e-mat-bal').innerText = matAssigned - matCompleted;
             document.getElementById('e-total-amt').innerText = "₹ " + grandAmt.toLocaleString('en-IN');
+            
             document.getElementById('my-report-data').style.display = 'block';
-            document.getElementById('my-report-data').scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
