@@ -4,177 +4,471 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Portal - Sri Vishnu Priya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FIREBASE DIRECT SCRIPTS -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        :root { --primary: #0f172a; --secondary: #2563eb; --bg-color: #f1f5f9; --card-bg: #ffffff; --text-dark: #1e293b; --border: #e2e8f0; --success: #16a34a; }
-        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
-        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, var(--primary), var(--secondary)); }
-        .login-box { background: var(--card-bg); padding: 40px; border-radius: 12px; width: 100%; max-width: 380px; text-align: center; }
-        .form-group { margin-bottom: 20px; text-align: left; } .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; }
-        .form-group select, .form-group input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
-        .btn-full { width: 100%; padding: 12px; background: var(--secondary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
-        #dashboard-screen { display: none; min-height: 100vh; }
-        .sidebar { width: 260px; background: var(--primary); color: white; position: fixed; height: 100vh; display: flex; flex-direction: column; }
-        .brand { padding: 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .tab-btn { background: transparent; color: #cbd5e1; border: none; padding: 15px 25px; text-align: left; cursor: pointer; width: 100%; }
-        .tab-btn.active { background: rgba(255,255,255,0.05); color: white; border-left: 4px solid var(--secondary); }
-        .main-content { margin-left: 260px; padding: 30px; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
-        .btn-print { background: var(--text-dark); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
-        .btn-submit { background: var(--success); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
-        .table-container { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #f8fafc; padding: 15px; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
-        td { padding: 15px; border-bottom: 1px solid var(--border); }
-        .input-sm { padding: 8px; border: 1px solid var(--border); border-radius: 4px; }
-        .cards-wrapper { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px; }
-        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border); flex: 1; text-align: center; }
-        .stat-card h5 { margin: 0 0 10px 0; font-size: 0.8rem; } .stat-card .val { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
-        .tab-content { display: none; } .tab-content.active { display: block; }
-        @media print { body { background: white; } .sidebar, .no-print { display: none !important; } .main-content { margin: 0; padding: 0; } .stat-card, table, th, td { border: 1px solid #000; } }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px 15px; }
+        
+        .circle { position: fixed; border-radius: 50%; background: linear-gradient(135deg, #00d2ff, #3a7bd5); filter: blur(80px); z-index: 0; }
+        .circle1 { width: 250px; height: 250px; top: -50px; left: -50px; opacity: 0.4; }
+        .circle2 { width: 300px; height: 300px; bottom: -100px; right: -50px; opacity: 0.3; }
+
+        .container { position: relative; z-index: 1; width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 20px; }
+        .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px 20px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); }
+        
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h2 { font-size: 22px; font-weight: 600; color: #00d2ff; }
+        .header p { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+        .input-group { margin-bottom: 18px; display: flex; flex-direction: column; gap: 6px;}
+        .input-group label { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; text-transform: uppercase;}
+        .input-group input, .input-group select { width: 100%; padding: 12px 15px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; color: #fff; outline: none; font-size: 15px; }
+        .input-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;}
+        .input-group select option { background: #1f363d; color: white; padding: 10px; }
+        .input-group input:focus, .input-group select:focus { border-color: #00d2ff; }
+
+        .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, #00d2ff, #3a7bd5); border: none; border-radius: 10px; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0, 210, 255, 0.2); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 210, 255, 0.4); }
+
+        /* Dashboard Styles */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;}
+        .user-info h3 { font-size: 16px; color: #fff; }
+        .user-info p { font-size: 12px; color: #00d2ff; }
+        .logout-btn { background: rgba(255, 107, 107, 0.1); color: #ff6b6b; border: 1px solid rgba(255, 107, 107, 0.3); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .option-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px 15px; border-radius: 15px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .option-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); }
+        .option-card i { font-size: 30px; color: #00d2ff; margin-bottom: 15px; }
+        .option-card h3 { font-size: 14px; color: #fff; }
+
+        /* Internal Pages Common */
+        .page-header { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .back-icon { font-size: 20px; color: #00d2ff; cursor: pointer; margin-right: 15px; }
+        .page-header h3 { font-size: 18px; font-weight: 600; }
+
+        /* Report Entry Styles */
+        .search-box { position: relative; margin-bottom: 20px; }
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.5); }
+        .search-box input { width: 100%; padding: 12px 15px 12px 45px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
+        .search-box input:focus { border-color: #00d2ff; }
+
+        .account-card { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.08); border-radius: 15px; padding: 18px; margin-bottom: 15px; transition: 0.3s; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px;}
+        .acc-no { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: 1px; }
+        .acc-type { font-size: 11px; font-weight: 600; background: rgba(0, 210, 255, 0.15); color: #00d2ff; padding: 4px 8px; border-radius: 6px; }
+        .acc-details { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 13px; color: rgba(255,255,255,0.8); }
+        .acc-details span { font-weight: 600; color: #fff; }
+        .action-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .action-row select, .action-row input { flex: 1; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; font-size: 13px; outline: none; }
+        .btn-update { width: 100%; padding: 10px; background: #2ed573; border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn-update:hover { background: #27ae60; }
+        
+        .no-data { text-align: center; color: rgba(255,255,255,0.5); padding: 30px 0; font-size: 14px; }
+
+        /* Performance Report Styles */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        .print-btn { background: linear-gradient(135deg, #f6d365, #fda085); display: none; }
+
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; text-align: center; }
+        .stat-card h4 { font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; margin-bottom: 5px; }
+        .stat-card h2 { font-size: 18px; font-weight: 600; color: #fff; }
+        
+        .card-assigned h2 { color: #00d2ff; } .card-completed h2 { color: #2ed573; } .card-balance h2 { color: #ff6b6b; }
+        .card-lock h2, .card-pcr h2, .card-qr h2, .card-op h2, .card-seizing h2 { color: #f6d365; }
+
+        .table-container { overflow-x: auto; background: rgba(0,0,0,0.1); border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        th { font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; background: rgba(255, 255, 255, 0.08); }
+        td { font-size: 12px; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; background: rgba(255,255,255,0.1); }
+
+        .section-title { font-size: 16px; font-weight: 600; margin: 20px 0 10px 0; color: #00d2ff; text-transform: uppercase; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
+
+        /* Print Layout Rules */
+        .print-header { display: none; }
+        @media print {
+            body { background: #fff; color: #000; padding: 0; margin: 0; }
+            .circle, #loginPanel, #dashboardPanel, #entryPanel, .back-icon, .btn-group { display: none !important; }
+            .glass-panel { background: none; border: none; box-shadow: none; padding: 0; }
+            .container { max-width: 100%; gap: 0; }
+            
+            .section-title { color: #000 !important; border-bottom: 1px solid #000; margin-top: 20px; }
+            .table-container { background: transparent; }
+            table { border: 1px solid #000; margin-bottom: 20px; }
+            th, td { border: 1px solid #000; color: #000; padding: 6px; }
+            th { background: #eee; }
+            
+            .cards-grid { grid-template-columns: repeat(4, 1fr); gap: 5px; }
+            .stat-card { border: 1px solid #000; background: #fff; padding: 8px; }
+            .stat-card h4 { color: #333; font-size: 9px; }
+            .stat-card h2 { color: #000 !important; font-size: 16px; }
+
+            .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin: 15px 0 20px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; }
+        }
     </style>
 </head>
 <body>
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
 
-    <div id="login-screen">
-        <div class="login-box">
-            <h2>Employee Login</h2>
-            <div class="form-group"><label>Select Name</label><select id="login-emp-name"></select></div>
-            <div class="form-group"><label>Passcode</label><input type="password" id="login-passcode"></div>
-            <button class="btn-full" onclick="authEmp()">LOG IN</button>
-        </div>
-    </div>
-
-    <div id="dashboard-screen">
-        <div class="sidebar no-print">
-            <div class="brand"><h2>Employee Portal</h2><p id="display-emp-name"></p></div>
-            <button class="tab-btn active" onclick="switchTab('daily-entry', this)">DAILY ENTRY</button>
-            <button class="tab-btn" onclick="switchTab('performance-report', this)">PERFORMANCE REPORT</button>
-            <button class="tab-btn" style="margin-top:auto; background:#991b1b;" onclick="location.reload()">LOGOUT</button>
-        </div>
-
-        <div class="main-content">
-            <div id="daily-entry" class="tab-content active">
-                <div class="section-header no-print">
-                    <h3>DAILY PERFORMANCE ENTRY</h3><span>Date: <span id="entry-date"></span></span>
+    <div class="container">
+        
+        <!-- LOGIN PANEL -->
+        <div class="glass-panel" id="loginPanel">
+            <div class="header">
+                <h2>Employee Portal</h2>
+                <p>Login to access your workspace</p>
+            </div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label>Branch</label>
+                    <select id="loginBranch" required><option value="">Loading...</option></select>
                 </div>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>A/C No</th><th>Type</th><th>INS/Year</th><th>Status</th><th>Amount</th><th>Action</th></tr></thead>
-                        <tbody id="assigned-accounts-body"></tbody>
-                    </table>
+                <div class="input-group">
+                    <label>Employee Name</label>
+                    <select id="loginName" required><option value="">Select Branch First...</option></select>
+                </div>
+                <div class="input-group">
+                    <label>Passcode</label>
+                    <input type="password" id="loginPasscode" placeholder="4-digit Passcode" required autocomplete="off">
+                </div>
+                <button type="submit" class="btn-primary" id="loginBtn">Secure Login <i class="fas fa-lock"></i></button>
+            </form>
+        </div>
+
+        <!-- MAIN DASHBOARD -->
+        <div class="glass-panel" id="dashboardPanel" style="display:none;">
+            <div class="top-nav">
+                <div class="user-info">
+                    <h3 id="displayExecName">NAME</h3>
+                    <p id="displayBranchName">Branch</p>
+                </div>
+                <button class="logout-btn" onclick="logoutApp()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+
+            <div class="options-grid">
+                <div class="option-card" onclick="showPanel('entryPanel')">
+                    <i class="fas fa-edit"></i>
+                    <h3>Report Entry</h3>
+                </div>
+                <div class="option-card" onclick="showPanel('performancePanel')">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Performance Report</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. REPORT ENTRY PANEL -->
+        <div class="glass-panel" id="entryPanel" style="display:none;">
+            <div class="page-header">
+                <i class="fas fa-arrow-left back-icon" onclick="showPanel('dashboardPanel')"></i>
+                <h3>Report Entry</h3>
+            </div>
+            
+            <div class="input-group">
+                <label>Select Date</label>
+                <input type="date" id="workDate" onchange="loadPendingAccounts()">
+            </div>
+
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="accSearch" placeholder="Search Account Number..." onkeyup="filterAccounts()">
+            </div>
+
+            <div id="accountsContainer"></div>
+        </div>
+
+        <!-- 2. PERFORMANCE REPORT PANEL -->
+        <div class="glass-panel" id="performancePanel" style="display:none;">
+            <div class="page-header">
+                <i class="fas fa-arrow-left back-icon" onclick="showPanel('dashboardPanel')"></i>
+                <h3>Performance Report</h3>
+            </div>
+            
+            <div class="form-row">
+                <div class="input-group">
+                    <label>From Date</label>
+                    <input type="date" id="fromDate" required>
+                </div>
+                <div class="input-group">
+                    <label>To Date</label>
+                    <input type="date" id="toDate" required>
                 </div>
             </div>
 
-            <div id="performance-report" class="tab-content">
-                <div class="section-header no-print">
-                    <h3>PERFORMANCE REPORT</h3>
-                    <div style="display:flex; gap:10px;">
-                        <input type="date" id="report-date-select" class="input-sm">
-                        <button class="btn-submit" onclick="fetchEmployeeReport()">SEARCH</button>
-                        <button class="btn-print" onclick="window.print()">🖨️ PRINT</button>
+            <div class="btn-group">
+                <button onclick="fetchPerformance()" class="btn-primary" id="searchBtn" style="flex:1; font-size:14px; padding:10px;"><i class="fas fa-search"></i> Search</button>
+                <button onclick="window.print()" class="btn-primary print-btn" id="printBtn" style="flex:1; font-size:14px; padding:10px;"><i class="fas fa-print"></i> Print</button>
+            </div>
+
+            <!-- PRINT HEADER -->
+            <div class="print-header" id="printHeaderMain">
+                <div style="flex:1; text-align:left;">Executive: <span id="printExecName"></span></div>
+                <div style="flex:1; text-align:center;">DAILY PERFORMANCE REPORT</div>
+                <div style="flex:1; text-align:right;">Date: <span id="printDateRange"></span></div>
+            </div>
+
+            <!-- REPORT DATA -->
+            <div id="reportContainer" style="display:none; width: 100%;">
+                
+                <!-- REGULAR -->
+                <div class="report-section" id="regularSection" style="display:block;">
+                    <div class="section-title">REGULAR ACCOUNTS</div>
+                    <div class="cards-grid">
+                        <div class="stat-card card-assigned"><h4>Assign</h4><h2 id="rAssign">0</h2></div>
+                        <div class="stat-card card-completed"><h4>Comp</h4><h2 id="rComp">0</h2></div>
+                        <div class="stat-card card-balance"><h4>Bal</h4><h2 id="rBal">0</h2></div>
+                        <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="rLock">0</h2></div>
+                        <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="rPcr">0</h2></div>
+                        <div class="stat-card card-qr"><h4>QR</h4><h2 id="rQr">0</h2></div>
+                        <div class="stat-card card-op"><h4>OP</h4><h2 id="rOp">0</h2></div>
+                        <div class="stat-card card-seizing"><h4>SEIZ</h4><h2 id="rSeize">0</h2></div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>S.No</th><th>Type</th><th>A/C No</th><th>INS</th><th>Payment Type</th><th>Amount (₹)</th></tr></thead>
+                            <tbody id="regTableBody"></tbody>
+                        </table>
                     </div>
                 </div>
 
-                <div class="print-header" style="text-align:center; display:none;" id="print-header-div">
-                    <h2>PERFORMANCE REPORT</h2><p><span id="print-emp-name"></span> | <span id="print-report-date"></span></p>
-                </div>
-
-                <h4>REGULAR SUMMARY</h4><div class="cards-wrapper" id="r-cards"></div>
-                <h4>MATURED SUMMARY</h4><div class="cards-wrapper" id="m-cards"></div>
-                <h4>SUBMITTED PERFORMANCE</h4>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>A/C No</th><th>Type</th><th>INS</th><th>Status</th><th>Amount</th></tr></thead>
-                        <tbody id="submitted-performance-body"></tbody>
-                    </table>
+                <!-- MATURED -->
+                <div class="report-section page-break" id="maturedSection" style="display:block; margin-top:20px;">
+                    <div class="section-title" style="color: #f6d365;">MATURED ACCOUNTS</div>
+                    <div class="cards-grid">
+                        <div class="stat-card card-assigned"><h4>Assign</h4><h2 id="mAssign">0</h2></div>
+                        <div class="stat-card card-completed"><h4>Comp</h4><h2 id="mComp">0</h2></div>
+                        <div class="stat-card card-balance"><h4>Bal</h4><h2 id="mBal">0</h2></div>
+                        <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="mLock">0</h2></div>
+                        <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="mPcr">0</h2></div>
+                        <div class="stat-card card-qr"><h4>QR</h4><h2 id="mQr">0</h2></div>
+                        <div class="stat-card card-op"><h4>OP</h4><h2 id="mOp">0</h2></div>
+                        <div class="stat-card card-seizing"><h4>SEIZ</h4><h2 id="mSeize">0</h2></div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>S.No</th><th>Type</th><th>A/C No</th><th>INS</th><th>Payment Type</th><th>Amount (₹)</th></tr></thead>
+                            <tbody id="matTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
         </div>
+
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    <script>
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('workDate').value = today;
+        document.getElementById('fromDate').value = today;
+        document.getElementById('toDate').value = today;
 
-        const firebaseConfig = { apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM", authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com", databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com", projectId: "sri-vishnu-priya-finance-c591f", storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app", messagingSenderId: "184676228358", appId: "1:184676228358:web:c2b32b68debeeadadfd287" };
-        const app = initializeApp(firebaseConfig); const db = getDatabase(app);
+        let currentExec = "";
+        let currentBranch = "";
 
-        const d = new Date();
-        const todayStr = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
-        document.getElementById('entry-date').innerText = todayStr;
-        
-        let loggedEmp = "", empMap = {}, totalRAssign=0, totalMAssign=0;
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
         // Login Logic
-        onValue(ref(db, 'executives'), (snap) => {
-            const sel = document.getElementById('login-emp-name'); sel.innerHTML = '<option value="">--Select--</option>';
-            if(snap.exists()) { snap.forEach(ch => { empMap[ch.val().name] = ch.val().passcode; sel.innerHTML += `<option value="${ch.val().name}">${ch.val().name}</option>`; }); }
+        db.ref('branches').once('value').then((snapshot) => {
+            const b = document.getElementById('loginBranch');
+            b.innerHTML = '<option value="">-- Select Branch --</option>'; 
+            const data = snapshot.val();
+            if (data) { for (let k in data) { b.innerHTML += `<option value="${data[k].branchName}">${data[k].branchName}</option>`; } }
         });
 
-        window.authEmp = function() {
-            const n = document.getElementById('login-emp-name').value, p = document.getElementById('login-passcode').value;
-            if(empMap[n] === p) {
-                loggedEmp = n; document.getElementById('login-screen').style.display='none'; document.getElementById('dashboard-screen').style.display='block';
-                document.getElementById('display-emp-name').innerText = n; document.getElementById('print-emp-name').innerText = n;
-                loadAssignedAccounts();
-            } else alert("Invalid Passcode!");
-        }
-
-        function loadAssignedAccounts() {
-            onValue(ref(db, `assignments/${loggedEmp}`), (snap) => {
-                const tbody = document.getElementById('assigned-accounts-body'); tbody.innerHTML=''; totalRAssign=0; totalMAssign=0;
-                if(snap.exists()) {
-                    snap.forEach(ch => {
-                        const a = ch.val(), id = ch.key;
-                        a.type==='REGULAR' ? totalRAssign++ : totalMAssign++;
-                        let insVal = a.type==='REGULAR' ? `${a.installments} INS` : `${a.installments} INS (Yr: ${a.year})`;
-                        tbody.innerHTML += `<tr><td><strong>${a.accountNo}</strong></td><td>${a.type}</td><td>${insVal}</td>
-                            <td><select id="st-${id}" class="input-sm"><option value="">Select</option><option value="LOCK">LOCK</option><option value="PCR">PCR</option><option value="OP">OP</option><option value="SEEZING">SEEZING</option></select></td>
-                            <td><input type="number" id="am-${id}" class="input-sm" placeholder="0"></td>
-                            <td><button class="btn-submit" onclick="submitPerf('${id}','${a.type}','${a.installments} INS')">Submit</button></td></tr>`;
-                    });
+        document.getElementById('loginBranch').addEventListener('change', function() {
+            const b = this.value;
+            const e = document.getElementById('loginName');
+            e.innerHTML = '<option value="">Loading...</option>';
+            db.ref('executives').once('value').then((snapshot) => {
+                e.innerHTML = '<option value="">-- Select Your Name --</option>';
+                const data = snapshot.val();
+                if (data) {
+                    for (let k in data) {
+                        if(data[k].branch === b) e.innerHTML += `<option value="${data[k].name}" data-pass="${data[k].passcode}">${data[k].name}</option>`;
+                    }
                 }
             });
-        }
+        });
 
-        window.submitPerf = function(id, type, ins) {
-            const st = document.getElementById(`st-${id}`).value, am = document.getElementById(`am-${id}`).value;
-            if(!st) return alert("Select Status");
-            set(ref(db, `daily_performance/${todayStr}/${loggedEmp}/${id}`), { 
-                accountNo: document.getElementById(`st-${id}`).parentElement.parentElement.cells[0].innerText, 
-                type: type, ins: ins, status: st, amount: am||0 
-            }).then(()=>alert("✅ Submited!")).catch(e => alert("❌ Error: " + e.message));
-        }
-
-        window.fetchEmployeeReport = function() {
-            const dateInput = document.getElementById('report-date-select').value;
-            if(!dateInput) return alert("Please select a date!");
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const b = document.getElementById('loginBranch').value;
+            const s = document.getElementById('loginName');
+            const n = s.value;
+            const p = document.getElementById('loginPasscode').value.trim();
+            const btn = document.getElementById('loginBtn');
             
-            const selDate = new Date(dateInput);
-            const dbDate = `${selDate.getDate().toString().padStart(2,'0')}-${(selDate.getMonth()+1).toString().padStart(2,'0')}-${selDate.getFullYear()}`;
-            document.getElementById('print-report-date').innerText = dbDate;
-            document.getElementById('print-header-div').style.display = 'block';
+            if(!b || !n) return alert("Select Branch and Name!");
+            const correct = s.options[s.selectedIndex].getAttribute('data-pass');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
 
-            onValue(ref(db, `daily_performance/${dbDate}/${loggedEmp}`), (snap) => {
-                const tbody = document.getElementById('submitted-performance-body'); tbody.innerHTML='';
-                let rC={c:0,l:0,p:0,o:0,s:0}, mC={c:0,l:0,p:0,o:0,s:0};
-                
-                if(snap.exists()) {
-                    snap.forEach(ch => {
-                        const d = ch.val(), t = d.type==='REGULAR'?rC:mC;
-                        t.c++; if(d.status==='LOCK')t.l++; else if(d.status==='PCR')t.p++; else if(d.status==='OP'||d.status==="OP'S")t.o++; else if(d.status==='SEEZING')t.s++;
-                        tbody.innerHTML += `<tr><td><strong>${d.accountNo}</strong></td><td>${d.type}</td><td>${d.ins||'-'}</td><td>${d.status}</td><td>₹${d.amount}</td></tr>`;
-                    });
-                } else { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No records found.</td></tr>'; }
+            setTimeout(() => {
+                if(p === correct) {
+                    currentExec = n; currentBranch = b;
+                    document.getElementById('displayExecName').innerText = n.toUpperCase();
+                    document.getElementById('displayBranchName').innerText = b;
+                    document.getElementById('printExecName').innerText = n.toUpperCase();
+                    showPanel('dashboardPanel');
+                } else {
+                    alert("Incorrect Passcode!");
+                    btn.innerHTML = 'Secure Login <i class="fas fa-lock"></i>';
+                }
+            }, 800);
+        });
 
-                document.getElementById('r-cards').innerHTML = bCard(totalRAssign, rC); document.getElementById('m-cards').innerHTML = bCard(totalMAssign, mC);
+        function showPanel(panelId) {
+            ['loginPanel', 'dashboardPanel', 'entryPanel', 'performancePanel'].forEach(id => {
+                document.getElementById(id).style.display = (id === panelId) ? 'block' : 'none';
+            });
+            if(panelId === 'entryPanel') loadPendingAccounts();
+        }
+
+        function logoutApp() {
+            if(confirm("Logout?")) {
+                currentExec = ""; currentBranch = "";
+                document.getElementById('loginForm').reset();
+                document.getElementById('loginBtn').innerHTML = 'Secure Login <i class="fas fa-lock"></i>';
+                showPanel('loginPanel');
+            }
+        }
+
+        // --- REPORT ENTRY LOGIC ---
+        function loadPendingAccounts() {
+            const dateStr = document.getElementById('workDate').value;
+            const container = document.getElementById('accountsContainer');
+            container.innerHTML = '<div class="no-data"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+
+            db.ref('assigned_accounts').once('value').then((snapshot) => {
+                const data = snapshot.val();
+                let html = ''; let count = 0;
+                if (data) {
+                    for (let key in data) {
+                        let item = data[key];
+                        if (item.branch === currentBranch && item.executive === currentExec && item.date === dateStr && (!item.status || item.status === "Pending")) {
+                            count++;
+                            let dType = item.type === 'MATURED' ? `MATURED (${item.maturedYear})` : 'REGULAR';
+                            html += `
+                                <div class="account-card" id="card_${key}">
+                                    <div class="card-header"><div class="acc-no">${item.accountNumber}</div><div class="acc-type">${dType}</div></div>
+                                    <div class="acc-details"><div>INS: <span>${item.ins}</span></div><div>Target: <span>₹ ${item.amount}</span></div></div>
+                                    <div class="action-row">
+                                        <select id="status_${key}"><option value="">Status</option><option value="LOCK">LOCK</option><option value="PCR">PCR</option><option value="QR">QR</option><option value="OP">OP</option><option value="SEIZING">SEIZING</option></select>
+                                        <input type="number" id="amt_${key}" placeholder="Collected ₹">
+                                    </div>
+                                    <button class="btn-update" id="btn_${key}" onclick="updateEntry('${key}')">Submit <i class="fas fa-check-circle"></i></button>
+                                </div>`;
+                        }
+                    }
+                }
+                container.innerHTML = count > 0 ? html : `<div class="no-data">No pending accounts.</div>`;
             });
         }
-        function bCard(a,c){ return `<div class="stat-card"><h5>Assigned</h5><div class="val">${a}</div></div><div class="stat-card"><h5>Completed</h5><div class="val">${c.c}</div></div><div class="stat-card"><h5>Balance</h5><div class="val">${Math.max(0,a-c.c)}</div></div><div class="stat-card"><h5>LOCK</h5><div class="val">${c.l}</div></div><div class="stat-card"><h5>PCR</h5><div class="val">${c.p}</div></div><div class="stat-card"><h5>OP</h5><div class="val">${c.o}</div></div><div class="stat-card"><h5>SEEZING</h5><div class="val">${c.s}</div></div>`; }
-    </script>
-    <script>
-        function switchTab(id, btn) { document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); btn.classList.add('active'); }
+
+        function filterAccounts() {
+            const term = document.getElementById('accSearch').value.toLowerCase();
+            document.querySelectorAll('.account-card').forEach(c => {
+                c.style.display = c.querySelector('.acc-no').innerText.toLowerCase().includes(term) ? 'block' : 'none';
+            });
+        }
+
+        window.updateEntry = function(key) {
+            const st = document.getElementById(`status_${key}`).value;
+            const amt = document.getElementById(`amt_${key}`).value.trim();
+            const btn = document.getElementById(`btn_${key}`);
+            if(!st || !amt) return alert("Select Status and enter Amount!");
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            db.ref('assigned_accounts/' + key).update({ status: st, collectedAmount: amt }).then(() => {
+                document.getElementById(`card_${key}`).style.display = 'none';
+            }).catch(e => { alert("Error: " + e.message); btn.innerHTML = 'Submit'; });
+        };
+
+        // --- PERFORMANCE REPORT LOGIC ---
+        function formatDate(dStr) { let p = dStr.split('-'); return `${p[2]}-${p[1]}-${p[0]}`; }
+
+        function fetchPerformance() {
+            const fDate = document.getElementById('fromDate').value;
+            const tDate = document.getElementById('toDate').value;
+            const btn = document.getElementById('searchBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            db.ref('assigned_accounts').once('value').then((snapshot) => {
+                const data = snapshot.val();
+                let rAs = 0, rCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0; let rHtml = '';
+                let mAs = 0, mCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0; let mHtml = '';
+
+                if(data) {
+                    for(let k in data) {
+                        let i = data[k];
+                        if(i.branch === currentBranch && i.executive === currentExec && i.date >= fDate && i.date <= tDate) {
+                            let stText = i.status && i.status !== "Pending" ? i.status : "Pending";
+                            let dAmt = i.collectedAmount || i.amount;
+                            
+                            if(i.type === 'REGULAR') {
+                                rAs++;
+                                if(stText !== "Pending") {
+                                    rCo++; if(stText==='LOCK')rL++; else if(stText==='PCR')rP++; else if(stText==='QR')rQ++; else if(stText==='OP')rO++; else if(stText==='SEIZING')rS++;
+                                }
+                                rHtml += `<tr><td>${rAs}</td><td>REGULAR</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${stText}</span></td><td>₹ ${dAmt}</td></tr>`;
+                            } 
+                            else if (i.type === 'MATURED') {
+                                mAs++;
+                                if(stText !== "Pending") {
+                                    mCo++; if(stText==='LOCK')mL++; else if(stText==='PCR')mP++; else if(stText==='QR')mQ++; else if(stText==='OP')mO++; else if(stText==='SEIZING')mS++;
+                                }
+                                mHtml += `<tr><td>${mAs}</td><td>MATURED (${i.maturedYear})</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${stText}</span></td><td>₹ ${dAmt}</td></tr>`;
+                            }
+                        }
+                    }
+                }
+
+                document.getElementById('printDateRange').innerText = (fDate === tDate) ? formatDate(fDate) : `${formatDate(fDate)} to ${formatDate(tDate)}`;
+
+                // Update Reg
+                document.getElementById('rAssign').innerText = rAs; document.getElementById('rComp').innerText = rCo; document.getElementById('rBal').innerText = (rAs - rCo);
+                document.getElementById('rLock').innerText = rL; document.getElementById('rPcr').innerText = rP; document.getElementById('rQr').innerText = rQ; document.getElementById('rOp').innerText = rO; document.getElementById('rSeize').innerText = rS;
+                document.getElementById('regTableBody').innerHTML = rHtml;
+                document.getElementById('regularSection').style.display = rAs > 0 ? 'block' : 'none';
+
+                // Update Mat
+                document.getElementById('mAssign').innerText = mAs; document.getElementById('mComp').innerText = mCo; document.getElementById('mBal').innerText = (mAs - mCo);
+                document.getElementById('mLock').innerText = mL; document.getElementById('mPcr').innerText = mP; document.getElementById('mQr').innerText = mQ; document.getElementById('mOp').innerText = mO; document.getElementById('mSeize').innerText = mS;
+                document.getElementById('matTableBody').innerHTML = mHtml;
+                document.getElementById('maturedSection').style.display = mAs > 0 ? 'block' : 'none';
+
+                if(rAs > 0 || mAs > 0) {
+                    document.getElementById('reportContainer').style.display = 'block';
+                    document.getElementById('printBtn').style.display = 'block';
+                } else {
+                    document.getElementById('reportContainer').style.display = 'none';
+                    document.getElementById('printBtn').style.display = 'none';
+                    alert("No accounts found!");
+                }
+                btn.innerHTML = '<i class="fas fa-search"></i> Search';
+            });
+        }
     </script>
 </body>
 </html>
