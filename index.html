@@ -13,14 +13,11 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px 15px; }
-        
         .circle { position: fixed; border-radius: 50%; background: linear-gradient(135deg, #00d2ff, #3a7bd5); filter: blur(80px); z-index: 0; }
         .circle1 { width: 250px; height: 250px; top: -50px; left: -50px; opacity: 0.4; }
         .circle2 { width: 300px; height: 300px; bottom: -100px; right: -50px; opacity: 0.3; }
-
         .container { position: relative; z-index: 1; width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 20px; }
         .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px 20px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); }
-        
         .header { text-align: center; margin-bottom: 25px; }
         .header h2 { font-size: 22px; font-weight: 600; color: #00d2ff; }
         .header p { font-size: 13px; color: rgba(255,255,255,0.6); }
@@ -29,7 +26,7 @@
         .input-group label { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; text-transform: uppercase;}
         .input-group input, .input-group select { width: 100%; padding: 12px 15px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; color: #fff; outline: none; font-size: 15px; }
         .input-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;}
-        .input-group select option { background: #1f363d; color: white; padding: 10px; }
+        .input-group select option { background: #1f363d; color: white; }
         .input-group input:focus, .input-group select:focus { border-color: #00d2ff; }
 
         .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, #00d2ff, #3a7bd5); border: none; border-radius: 10px; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0, 210, 255, 0.2); }
@@ -40,20 +37,26 @@
         .user-info p { font-size: 12px; color: #00d2ff; }
         .logout-btn { background: rgba(255, 107, 107, 0.1); color: #ff6b6b; border: 1px solid rgba(255, 107, 107, 0.3); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-        .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
-        .option-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px 15px; border-radius: 15px; text-align: center; cursor: pointer; transition: 0.3s; }
+        /* Dashboard Grid updated for 4 options */
+        .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .option-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px 10px; border-radius: 15px; text-align: center; cursor: pointer; transition: 0.3s; }
         .option-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); }
-        .option-card i { font-size: 30px; color: #00d2ff; margin-bottom: 15px; }
-        .option-card h3 { font-size: 14px; color: #fff; }
+        .option-card i { font-size: 28px; color: #00d2ff; margin-bottom: 15px; }
+        .option-card h3 { font-size: 12px; color: #fff; font-weight: 600; text-transform: uppercase;}
 
         .page-header { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
         .back-icon { font-size: 20px; color: #00d2ff; cursor: pointer; margin-right: 15px; }
         .page-header h3 { font-size: 18px; font-weight: 600; }
 
+        /* Assign Accounts (Input) */
+        td input { width: 100%; min-width: 100px; padding: 8px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: #fff; text-align: left; }
+        td input[readonly] { background: transparent; border: none; font-weight: bold; width: 50px; text-align: left; padding: 0;}
+        td input:focus { outline: none; border-color: #00d2ff; background: rgba(0,210,255,0.05); }
+
+        /* Report Entry */
         .search-box { position: relative; margin-bottom: 20px; }
         .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.5); }
         .search-box input { width: 100%; padding: 12px 15px 12px 45px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: #fff; font-size: 14px; outline: none; }
-        
         .account-card { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.08); border-radius: 15px; padding: 18px; margin-bottom: 15px; transition: 0.3s; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 10px;}
         .acc-no { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: 1px; }
@@ -64,11 +67,11 @@
         .action-row select, .action-row input { flex: 1; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; font-size: 13px; outline: none; }
         .btn-update { width: 100%; padding: 10px; background: #2ed573; border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.3s; }
         
+        /* Reports Shared */
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .btn-group { display: flex; gap: 10px; margin-top: 10px; }
         .print-btn { background: linear-gradient(135deg, #f6d365, #fda085); display: none; }
         
-        /* Matched Admin App Cards */
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; text-align: center; }
         .stat-card h4 { font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; margin-bottom: 5px; }
@@ -76,32 +79,48 @@
         .card-assigned h2 { color: #00d2ff; } .card-completed h2 { color: #2ed573; } .card-balance h2 { color: #ff6b6b; }
         .card-lock h2, .card-pcr h2, .card-qr h2, .card-op h2, .card-seizing h2 { color: #f6d365; }
         
-        .table-container { overflow-x: auto; background: rgba(0,0,0,0.1); border-radius: 10px; }
+        .table-container { overflow-x: auto; background: rgba(0,0,0,0.1); border-radius: 10px; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
         th, td { padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         th { font-size: 11px; color: rgba(255,255,255,0.7); text-transform: uppercase; background: rgba(255, 255, 255, 0.08); }
         td { font-size: 12px; }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; background: rgba(255,255,255,0.1); }
-        .section-title { font-size: 16px; font-weight: 600; margin: 20px 0 10px 0; color: #00d2ff; text-transform: uppercase; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
         
-        .print-header { display: none; }
+        /* Assignment Report Summary specific styles */
+        .summary-title { font-size: 14px; color: #f6d365; font-weight: 600; margin: 15px 0 10px 0; text-transform: uppercase; }
+        .summary-table th { background: rgba(0, 210, 255, 0.15); color: #00d2ff; }
 
-        /* MATCHED ADMIN APP PRINT CSS 100% */
+        .section-title { font-size: 16px; font-weight: 600; margin: 20px 0 10px 0; color: #00d2ff; text-transform: uppercase; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
+        .report-section { display: none; }
+        .no-data { text-align: center; color: rgba(255,255,255,0.5); padding: 30px 0; font-size: 14px; }
+        
+        /* Print Styles - EXACT MATCH TO TL APP */
+        .print-header { display: none; }
         @media print {
+            @page { margin: 8mm; size: A4; }
             body { background: #fff; color: #000; padding: 0; margin: 0; }
-            .circle, #loginPanel, #dashboardPanel, #entryPanel, .back-icon, .btn-group, .page-header, .form-row { display: none !important; }
+            .circle, #loginPanel, #dashboardPanel, #entryPanel, #assignPanel, #performancePanel, #assignReportPanel .page-header, #assignReportPanel .btn-group, .back-icon { display: none !important; }
+            
+            .hide-print { display: none !important; }
+            
             .glass-panel { background: none; border: none; box-shadow: none; padding: 0; }
             .container { max-width: 100%; gap: 0; }
-            .section-title { color: #000 !important; border-bottom: 1px solid #000; margin-top: 20px; }
-            .table-container { background: transparent; }
-            table { border: 1px solid #000; margin-bottom: 20px; }
-            th, td { border: 1px solid #000; color: #000; padding: 8px; font-size: 13px;}
-            th { background: #eee; }
+            
+            /* Performance Report Cards formatting */
             .cards-grid { grid-template-columns: repeat(4, 1fr); gap: 5px; }
             .stat-card { border: 1px solid #000; background: #fff; padding: 8px; }
             .stat-card h4 { color: #333; font-size: 9px; }
             .stat-card h2 { color: #000 !important; font-size: 16px; }
-            .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin: 15px 0 20px 0; font-size: 14px; text-transform: uppercase; font-weight: bold; }
+
+            /* Compact Table Formatting for 40+ accounts */
+            table { border: 1px solid #000; background: transparent; margin-bottom: 8px !important; }
+            th, td { border: 1px solid #000; color: #000; padding: 3px 5px !important; font-size: 10.5px !important; line-height: 1.1; }
+            th { background: #e0e0e0 !important; color: #000; font-weight: bold; -webkit-print-color-adjust: exact; }
+            
+            .section-title { display: none; } 
+            .summary-title { font-size: 11px !important; color: #000 !important; margin: 2px 0 2px 0 !important; font-weight: bold; text-decoration: underline;}
+
+            .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin: 10px 0 5px 0; font-size: 12px; text-transform: uppercase; font-weight: bold; }
             .page-break { page-break-before: always; }
         }
     </style>
@@ -129,7 +148,7 @@
                 </div>
                 <div class="input-group">
                     <label>Passcode</label>
-                    <input type="password" id="loginPasscode" placeholder="4-digit Passcode" required autocomplete="off">
+                    <input type="number" id="loginPasscode" placeholder="4-digit Passcode" required autocomplete="off">
                 </div>
                 <button type="submit" class="btn-primary" id="loginBtn">Secure Login <i class="fas fa-lock"></i></button>
             </form>
@@ -144,13 +163,77 @@
                 </div>
                 <button class="logout-btn" onclick="logoutApp()"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
+            
             <div class="options-grid">
+                <div class="option-card" onclick="showPanel('assignPanel')">
+                    <i class="fas fa-plus-circle"></i><h3>Assign Accounts</h3>
+                </div>
                 <div class="option-card" onclick="showPanel('entryPanel')">
                     <i class="fas fa-edit"></i><h3>Report Entry</h3>
+                </div>
+                <div class="option-card" onclick="showPanel('assignReportPanel')">
+                    <i class="fas fa-file-invoice-dollar"></i><h3>My Accounts Report</h3>
                 </div>
                 <div class="option-card" onclick="showPanel('performancePanel')">
                     <i class="fas fa-chart-line"></i><h3>Performance Report</h3>
                 </div>
+            </div>
+        </div>
+
+        <!-- 0. ASSIGN ACCOUNTS PANEL -->
+        <div class="glass-panel" id="assignPanel" style="display:none;">
+            <div class="page-header">
+                <i class="fas fa-arrow-left back-icon" onclick="showPanel('dashboardPanel')"></i>
+                <h3>Assign Accounts</h3>
+            </div>
+            
+            <form id="empAssignForm">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Date</label>
+                        <input type="date" id="empAssignDate" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Account Type</label>
+                        <select id="empAccType" required onchange="toggleEmpMaturedYear()">
+                            <option value="REGULAR">REGULAR</option>
+                            <option value="MATURED">MATURED</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="input-group" id="empMaturedYearDiv" style="display:none;">
+                        <label>Matured Year</label>
+                        <select id="empMaturedYear"></select>
+                    </div>
+                    <div class="input-group">
+                        <label>INS (Value)</label>
+                        <input type="text" id="empInsValue" placeholder="Ex: 5" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Count</label>
+                        <input type="number" id="empCountValue" placeholder="Ex: 7" required min="1" max="100">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top:10px;">Generate Fields <i class="fas fa-list-ol"></i></button>
+            </form>
+
+            <div id="empTablePanel" style="display:none; margin-top:20px;">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>A/C No</th>
+                                <th>INS</th>
+                                <th>Amount (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="empGeneratedRows"></tbody>
+                    </table>
+                </div>
+                <button id="empSaveAllBtn" class="btn-primary" style="margin-top:15px; background:linear-gradient(135deg, #2ed573, #27ae60);" onclick="saveEmpAccounts()">Save Accounts <i class="fas fa-save"></i></button>
             </div>
         </div>
 
@@ -166,12 +249,75 @@
             </div>
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" id="accSearch" placeholder="Search Account Number..." onkeyup="filterAccounts()">
+                <input type="number" id="accSearch" placeholder="Search Account Number..." onkeyup="filterAccounts()">
             </div>
             <div id="accountsContainer"></div>
         </div>
 
-        <!-- 2. PERFORMANCE REPORT PANEL -->
+        <!-- 2. MY ACCOUNTS REPORT PANEL (NEW) -->
+        <div class="glass-panel" id="assignReportPanel" style="display:none;">
+            <div class="page-header">
+                <i class="fas fa-arrow-left back-icon" onclick="showPanel('dashboardPanel')"></i>
+                <h3>My Accounts Report</h3>
+            </div>
+            
+            <div class="btn-group" style="margin-bottom:20px;">
+                <button onclick="fetchMyAssignReport()" class="btn-primary" id="searchReportBtn" style="flex:1; font-size:14px; padding:10px;"><i class="fas fa-download"></i> Load My Accounts</button>
+                <button onclick="window.print()" class="btn-primary print-btn" id="printReportBtn" style="flex:1; font-size:14px; padding:10px;"><i class="fas fa-print"></i> Print</button>
+            </div>
+
+            <!-- REGULAR SECTION -->
+            <div class="report-section" id="arRegularSection">
+                <div class="print-header">
+                    <div>Executive: <strong id="arPrintExecReg"></strong></div>
+                    <div><strong>ASSIGN ACCOUNTS</strong></div>
+                    <div><strong>REGULAR</strong></div>
+                </div>
+                <div class="section-title">Regular Accounts</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>S.No</th><th>A/C Number</th><th>INS</th><th>Amount (₹)</th><th class="hide-print">Date</th></tr>
+                        </thead>
+                        <tbody id="arRegTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="summary-title">REGULAR SUMMARY</div>
+                <div class="table-container">
+                    <table class="summary-table">
+                        <thead><tr><th>INSTALLMENTS</th><th>NO. OF ACCOUNTS</th><th>AMOUNT (Points)</th></tr></thead>
+                        <tbody id="arRegSummaryBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MATURED SECTION -->
+            <div class="report-section page-break" id="arMaturedSection">
+                <div class="print-header">
+                    <div>Executive: <strong id="arPrintExecMat"></strong></div>
+                    <div><strong>ASSIGN ACCOUNTS</strong></div>
+                    <div><strong>MATURED</strong></div>
+                </div>
+                <div class="section-title" style="color: #f6d365;">Matured Accounts</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>S.No</th><th>A/C Number</th><th>Matured Year</th><th>INS</th><th>Amount (₹)</th><th class="hide-print">Date</th></tr>
+                        </thead>
+                        <tbody id="arMatTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="summary-title">MATURED SUMMARY</div>
+                <div class="table-container">
+                    <table class="summary-table">
+                        <thead><tr><th>YEAR OF MATURED</th><th>NO. OF ACCOUNTS</th><th>AMOUNT (Points)</th></tr></thead>
+                        <tbody id="arMatSummaryBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. PERFORMANCE REPORT PANEL -->
         <div class="glass-panel" id="performancePanel" style="display:none;">
             <div class="page-header">
                 <i class="fas fa-arrow-left back-icon" onclick="showPanel('dashboardPanel')"></i>
@@ -190,25 +336,21 @@
             </div>
 
             <div class="btn-group">
-                <button onclick="fetchPerformance()" class="btn-primary" id="searchBtn" style="flex:1; font-size:14px; padding:10px;"><i class="fas fa-search"></i> Search</button>
-                <button onclick="window.print()" class="btn-primary print-btn" id="printBtn" style="flex:1; font-size:14px; padding:10px;"><i class="fas fa-print"></i> Print</button>
+                <button onclick="fetchPerformance()" class="btn-primary" id="searchPerfBtn" style="flex:1; font-size:14px; padding:10px;"><i class="fas fa-search"></i> Search</button>
+                <button onclick="window.print()" class="btn-primary print-btn" id="printPerfBtn" style="flex:1; font-size:14px; padding:10px;"><i class="fas fa-print"></i> Print</button>
             </div>
 
-            <div class="print-header" id="printHeaderMain">
-                <div style="flex:1; text-align:left;">Executive: <span id="printExecName"></span></div>
-                <div style="flex:1; text-align:center; font-size: 16px;">DAILY PERFORMANCE REPORT</div>
-                <div style="flex:1; text-align:right;">Date: <span id="printDateRange"></span></div>
+            <div class="print-header" id="printHeaderPerf">
+                <div style="flex:1; text-align:left;">Executive: <span id="printExecNamePerf"></span></div>
+                <div style="flex:1; text-align:center;">DAILY PERFORMANCE REPORT</div>
+                <div style="flex:1; text-align:right;">Date: <span id="printDateRangePerf"></span></div>
             </div>
 
-            <div id="reportContainer" style="display:none; width: 100%;">
-                
-                <!-- REGULAR SECTION -->
-                <div class="report-section" id="regularSection" style="display:block;">
+            <div id="perfReportContainer" style="display:none; width: 100%;">
+                <div class="report-section" id="perfRegularSection" style="display:block;">
                     <div class="section-title">REGULAR ACCOUNTS</div>
                     <div class="cards-grid">
-                        <div class="stat-card card-assigned"><h4>Assigned</h4><h2 id="rAssign">0</h2></div>
-                        <div class="stat-card card-completed"><h4>Completed</h4><h2 id="rComp">0</h2></div>
-                        <div class="stat-card card-balance"><h4>Balance</h4><h2 id="rBal">0</h2></div>
+                        <div class="stat-card card-completed"><h4>Comp</h4><h2 id="rComp">0</h2></div>
                         <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="rLock">0</h2></div>
                         <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="rPcr">0</h2></div>
                         <div class="stat-card card-qr"><h4>QR</h4><h2 id="rQr">0</h2></div>
@@ -223,13 +365,10 @@
                     </div>
                 </div>
 
-                <!-- MATURED SECTION -->
-                <div class="report-section page-break" id="maturedSection" style="display:block; margin-top:20px;">
+                <div class="report-section page-break" id="perfMaturedSection" style="display:block; margin-top:20px;">
                     <div class="section-title" style="color: #f6d365;">MATURED ACCOUNTS</div>
                     <div class="cards-grid">
-                        <div class="stat-card card-assigned"><h4>Assigned</h4><h2 id="mAssign">0</h2></div>
-                        <div class="stat-card card-completed"><h4>Completed</h4><h2 id="mComp">0</h2></div>
-                        <div class="stat-card card-balance"><h4>Balance</h4><h2 id="mBal">0</h2></div>
+                        <div class="stat-card card-completed"><h4>Comp</h4><h2 id="mComp">0</h2></div>
                         <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="mLock">0</h2></div>
                         <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="mPcr">0</h2></div>
                         <div class="stat-card card-qr"><h4>QR</h4><h2 id="mQr">0</h2></div>
@@ -243,9 +382,9 @@
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
+
     </div>
 
     <script>
@@ -253,8 +392,20 @@
         document.getElementById('workDate').value = today;
         document.getElementById('fromDate').value = today;
         document.getElementById('toDate').value = today;
+        document.getElementById('empAssignDate').value = today;
 
         let currentExec = ""; let currentBranch = "";
+
+        const currentYear = new Date().getFullYear();
+        const matYearSelect = document.getElementById('empMaturedYear');
+        for (let y = currentYear; y >= currentYear - 15; y--) {
+            matYearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+        }
+
+        function toggleEmpMaturedYear() {
+            const t = document.getElementById('empAccType').value;
+            document.getElementById('empMaturedYearDiv').style.display = (t === 'MATURED') ? 'flex' : 'none';
+        }
 
         const firebaseConfig = {
             apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
@@ -268,6 +419,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // Login
         db.ref('branches').once('value').then((snapshot) => {
             const b = document.getElementById('loginBranch');
             b.innerHTML = '<option value="">-- Select Branch --</option>'; 
@@ -304,18 +456,23 @@
                     currentExec = n; currentBranch = b;
                     document.getElementById('displayExecName').innerText = n.toUpperCase();
                     document.getElementById('displayBranchName').innerText = b;
-                    document.getElementById('printExecName').innerText = n.toUpperCase();
+                    
+                    document.getElementById('printExecNamePerf').innerText = n.toUpperCase();
+                    document.getElementById('arPrintExecReg').innerText = n.toUpperCase();
+                    document.getElementById('arPrintExecMat').innerText = n.toUpperCase();
+
                     showPanel('dashboardPanel');
                 } else { alert("Incorrect Passcode!"); btn.innerHTML = 'Secure Login <i class="fas fa-lock"></i>'; }
             }, 800);
         });
 
         function showPanel(panelId) {
-            ['loginPanel', 'dashboardPanel', 'entryPanel', 'performancePanel'].forEach(id => {
+            ['loginPanel', 'dashboardPanel', 'assignPanel', 'entryPanel', 'assignReportPanel', 'performancePanel'].forEach(id => {
                 document.getElementById(id).style.display = (id === panelId) ? 'block' : 'none';
             });
-            if(panelId === 'entryPanel') loadPendingAccounts();
+            if(panelId === 'entryPanel') loadPendingAccounts(); 
         }
+
         function logoutApp() {
             if(confirm("Logout?")) {
                 currentExec = ""; currentBranch = "";
@@ -325,10 +482,72 @@
             }
         }
 
+        // --- 0. EMP ASSIGN ACCOUNTS LOGIC ---
+        document.getElementById("empAssignForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const count = parseInt(document.getElementById('empCountValue').value);
+            const insValue = document.getElementById('empInsValue').value;
+
+            document.getElementById('empTablePanel').style.display = 'block';
+            const tbody = document.getElementById('empGeneratedRows');
+            tbody.innerHTML = ''; 
+
+            for (let i = 1; i <= count; i++) {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${i}</td>
+                        <td><input type="number" id="empAccNo_${i}" placeholder="A/C No" autocomplete="off"></td>
+                        <td><input type="text" value="${insValue}" readonly tabindex="-1"></td>
+                        <td><input type="number" id="empAmt_${i}" placeholder="₹"></td>
+                    </tr>
+                `;
+            }
+        });
+
+        window.saveEmpAccounts = async function() {
+            const saveBtn = document.getElementById('empSaveAllBtn');
+            const count = parseInt(document.getElementById('empCountValue').value);
+            const assignDate = document.getElementById('empAssignDate').value;
+            const type = document.getElementById('empAccType').value;
+            const maturedYear = type === 'MATURED' ? document.getElementById('empMaturedYear').value : null;
+            const insValue = document.getElementById('empInsValue').value;
+
+            let accountsToSave = [];
+            for (let i = 1; i <= count; i++) {
+                const accNo = document.getElementById(`empAccNo_${i}`).value.trim();
+                const amt = document.getElementById(`empAmt_${i}`).value.trim();
+                if (accNo !== "" && amt !== "") {
+                    accountsToSave.push({
+                        date: assignDate, branch: currentBranch, executive: currentExec,
+                        type: type, maturedYear: maturedYear, ins: insValue, accountNumber: accNo,
+                        amount: amt, status: "Pending", timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }
+            }
+            if (accountsToSave.length === 0) return alert("Please fill at least one Account Number and Amount!");
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            saveBtn.disabled = true;
+
+            try {
+                for (let acc of accountsToSave) await db.ref('assigned_accounts').push(acc);
+                alert(`${accountsToSave.length} Accounts Saved Successfully!`);
+                document.getElementById('empTablePanel').style.display = 'none';
+                document.getElementById('empAssignForm').reset();
+                document.getElementById('empAssignDate').value = today;
+                saveBtn.innerHTML = 'Save Accounts <i class="fas fa-save"></i>';
+                saveBtn.disabled = false;
+                showPanel('dashboardPanel'); 
+            } catch(error) {
+                alert("Error saving accounts: " + error.message);
+                saveBtn.innerHTML = 'Save Accounts <i class="fas fa-save"></i>';
+                saveBtn.disabled = false;
+            }
+        };
+
+        // --- 1. REPORT ENTRY LOGIC ---
         function loadPendingAccounts() {
             const container = document.getElementById('accountsContainer');
-            container.innerHTML = '<div class="no-data"><i class="fas fa-spinner fa-spin"></i> Loading All Pending...</div>';
-
+            container.innerHTML = '<div class="no-data"><i class="fas fa-spinner fa-spin"></i> Loading Pending...</div>';
             db.ref('assigned_accounts').once('value').then((snapshot) => {
                 const data = snapshot.val();
                 let html = ''; let count = 0;
@@ -367,42 +586,100 @@
             const amt = document.getElementById(`amt_${key}`).value.trim();
             const uDate = document.getElementById('workDate').value; 
             const btn = document.getElementById(`btn_${key}`);
-            
             if(!st || !amt) return alert("Select Status and enter Amount!");
-
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            db.ref('assigned_accounts/' + key).update({ 
-                status: st, 
-                collectedAmount: amt,
-                updatedDate: uDate 
-            }).then(() => {
+            db.ref('assigned_accounts/' + key).update({ status: st, collectedAmount: amt, updatedDate: uDate }).then(() => {
                 document.getElementById(`card_${key}`).style.display = 'none';
             }).catch(e => { alert("Error: " + e.message); btn.innerHTML = 'Submit'; });
         };
 
+        // --- 2. MY ASSIGN ACCOUNTS REPORT LOGIC (PDF STYLE) ---
+        function toPoints(amount) { return (parseFloat(amount || 0) / 100000).toFixed(2); }
+        
+        function fetchMyAssignReport() {
+            const btn = document.getElementById('searchReportBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+
+            db.ref('assigned_accounts').once('value').then((snapshot) => {
+                const data = snapshot.val();
+                let regularAccounts = []; let maturedAccounts = [];
+
+                if(data) {
+                    for(let key in data) {
+                        let item = data[key];
+                        if(item.branch === currentBranch && item.executive === currentExec) {
+                            if(item.type === 'REGULAR') regularAccounts.push(item);
+                            else if (item.type === 'MATURED') maturedAccounts.push(item);
+                        }
+                    }
+                }
+
+                // Render REGULAR
+                if(regularAccounts.length > 0) {
+                    document.getElementById('arRegularSection').style.display = 'block';
+                    let rHtml = ''; let rSummaryData = {};
+                    regularAccounts.forEach((acc, i) => {
+                        rHtml += `<tr><td>${i+1}</td><td>${acc.accountNumber}</td><td>${acc.ins}</td><td>₹ ${acc.amount}</td><td class="hide-print">${acc.date}</td></tr>`;
+                        let insKey = acc.ins + " INS";
+                        if(!rSummaryData[insKey]) rSummaryData[insKey] = { count: 0, amount: 0 };
+                        rSummaryData[insKey].count += 1;
+                        rSummaryData[insKey].amount += parseFloat(acc.amount) || 0;
+                    });
+                    document.getElementById('arRegTableBody').innerHTML = rHtml;
+
+                    let rSumHtml = '';
+                    for(let ins in rSummaryData) rSumHtml += `<tr><td>${ins}</td><td>${rSummaryData[ins].count}</td><td style="font-weight:bold;">${toPoints(rSummaryData[ins].amount)}</td></tr>`;
+                    document.getElementById('arRegSummaryBody').innerHTML = rSumHtml;
+                } else { document.getElementById('arRegularSection').style.display = 'none'; }
+
+                // Render MATURED
+                if(maturedAccounts.length > 0) {
+                    document.getElementById('arMaturedSection').style.display = 'block';
+                    let mHtml = ''; let mSummaryData = {}; 
+                    maturedAccounts.forEach((acc, i) => {
+                        mHtml += `<tr><td>${i+1}</td><td>${acc.accountNumber}</td><td>${acc.maturedYear}</td><td>${acc.ins}</td><td>₹ ${acc.amount}</td><td class="hide-print">${acc.date}</td></tr>`;
+                        let yearKey = acc.maturedYear;
+                        if(!mSummaryData[yearKey]) mSummaryData[yearKey] = { count: 0, amount: 0 };
+                        mSummaryData[yearKey].count += 1;
+                        mSummaryData[yearKey].amount += parseFloat(acc.amount) || 0;
+                    });
+                    document.getElementById('arMatTableBody').innerHTML = mHtml;
+
+                    let mSumHtml = '';
+                    for(let yr in mSummaryData) mSumHtml += `<tr><td>${yr}</td><td>${mSummaryData[yr].count}</td><td style="font-weight:bold; color:#f6d365;">${toPoints(mSummaryData[yr].amount)}</td></tr>`;
+                    document.getElementById('arMatSummaryBody').innerHTML = mSumHtml;
+                } else { document.getElementById('arMaturedSection').style.display = 'none'; }
+
+                if(regularAccounts.length > 0 || maturedAccounts.length > 0) {
+                    document.getElementById('printReportBtn').style.display = 'block';
+                } else {
+                    document.getElementById('printReportBtn').style.display = 'none';
+                    alert("No accounts assigned yet.");
+                }
+                
+                btn.innerHTML = '<i class="fas fa-download"></i> Load My Accounts';
+            });
+        }
+
+
+        // --- 3. PERFORMANCE LOGIC ---
         function formatDate(dStr) { if(!dStr)return""; let p = dStr.split('-'); return `${p[2]}-${p[1]}-${p[0]}`; }
 
         function fetchPerformance() {
             const fDate = document.getElementById('fromDate').value;
             const tDate = document.getElementById('toDate').value;
-            const btn = document.getElementById('searchBtn');
+            const btn = document.getElementById('searchPerfBtn');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
             db.ref('assigned_accounts').once('value').then((snapshot) => {
                 const data = snapshot.val();
-                let rAs = 0, rCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0; let rHtml = '';
-                let mAs = 0, mCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0; let mHtml = '';
+                let rCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0; let rHtml = '';
+                let mCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0; let mHtml = '';
 
                 if(data) {
                     for(let k in data) {
                         let i = data[k];
                         if(i.branch === currentBranch && i.executive === currentExec) {
-                            
-                            // 1. Assign: Increment for all accounts
-                            if (i.type === 'REGULAR') rAs++;
-                            else if (i.type === 'MATURED') mAs++;
-
-                            // 2. Completed: Only if updated in the date range
                             if(i.updatedDate >= fDate && i.updatedDate <= tDate && i.status && i.status !== "Pending") {
                                 let dAmt = i.collectedAmount || 0;
                                 if(i.type === 'REGULAR') {
@@ -418,31 +695,25 @@
                     }
                 }
 
-                document.getElementById('printDateRange').innerText = (fDate === tDate) ? formatDate(fDate) : `${formatDate(fDate)} to ${formatDate(tDate)}`;
+                document.getElementById('printDateRangePerf').innerText = (fDate === tDate) ? formatDate(fDate) : `${formatDate(fDate)} to ${formatDate(tDate)}`;
 
-                // Update Reg
-                document.getElementById('rAssign').innerText = rAs; 
                 document.getElementById('rComp').innerText = rCo; 
-                document.getElementById('rBal').innerText = (rAs - rCo);
                 document.getElementById('rLock').innerText = rL; document.getElementById('rPcr').innerText = rP; document.getElementById('rQr').innerText = rQ; document.getElementById('rOp').innerText = rO; document.getElementById('rSeize').innerText = rS;
                 document.getElementById('regTableBody').innerHTML = rHtml;
-                document.getElementById('regularSection').style.display = (rAs > 0 || rCo > 0) ? 'block' : 'none';
+                document.getElementById('perfRegularSection').style.display = rCo > 0 ? 'block' : 'none';
 
-                // Update Mat
-                document.getElementById('mAssign').innerText = mAs; 
                 document.getElementById('mComp').innerText = mCo; 
-                document.getElementById('mBal').innerText = (mAs - mCo);
                 document.getElementById('mLock').innerText = mL; document.getElementById('mPcr').innerText = mP; document.getElementById('mQr').innerText = mQ; document.getElementById('mOp').innerText = mO; document.getElementById('mSeize').innerText = mS;
                 document.getElementById('matTableBody').innerHTML = mHtml;
-                document.getElementById('maturedSection').style.display = (mAs > 0 || mCo > 0) ? 'block' : 'none';
+                document.getElementById('perfMaturedSection').style.display = mCo > 0 ? 'block' : 'none';
 
-                if((rAs > 0 || rCo > 0) || (mAs > 0 || mCo > 0)) {
-                    document.getElementById('reportContainer').style.display = 'block';
-                    document.getElementById('printBtn').style.display = 'block';
+                if(rCo > 0 || mCo > 0) {
+                    document.getElementById('perfReportContainer').style.display = 'block';
+                    document.getElementById('printPerfBtn').style.display = 'block';
                 } else {
-                    document.getElementById('reportContainer').style.display = 'none';
-                    document.getElementById('printBtn').style.display = 'none';
-                    alert("No data found!");
+                    document.getElementById('perfReportContainer').style.display = 'none';
+                    document.getElementById('printPerfBtn').style.display = 'none';
+                    alert("No updated accounts found in this date range.");
                 }
                 btn.innerHTML = '<i class="fas fa-search"></i> Search';
             });
