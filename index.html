@@ -13,11 +13,14 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); min-height: 100vh; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px 15px; }
+        
         .circle { position: fixed; border-radius: 50%; background: linear-gradient(135deg, #00d2ff, #3a7bd5); filter: blur(80px); z-index: 0; }
         .circle1 { width: 250px; height: 250px; top: -50px; left: -50px; opacity: 0.4; }
         .circle2 { width: 300px; height: 300px; bottom: -100px; right: -50px; opacity: 0.3; }
+
         .container { position: relative; z-index: 1; width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 20px; }
         .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 25px 20px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); }
+        
         .header { text-align: center; margin-bottom: 25px; }
         .header h2 { font-size: 22px; font-weight: 600; color: #00d2ff; }
         .header p { font-size: 13px; color: rgba(255,255,255,0.6); }
@@ -26,7 +29,7 @@
         .input-group label { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; text-transform: uppercase;}
         .input-group input, .input-group select { width: 100%; padding: 12px 15px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; color: #fff; outline: none; font-size: 15px; }
         .input-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;}
-        .input-group select option { background: #1f363d; color: white; }
+        .input-group select option { background: #1f363d; color: white; padding: 10px; }
         .input-group input:focus, .input-group select:focus { border-color: #00d2ff; }
 
         .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, #00d2ff, #3a7bd5); border: none; border-radius: 10px; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0, 210, 255, 0.2); }
@@ -60,18 +63,19 @@
         .action-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .action-row select, .action-row input { flex: 1; padding: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; font-size: 13px; outline: none; }
         .btn-update { width: 100%; padding: 10px; background: #2ed573; border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .no-data { text-align: center; color: rgba(255,255,255,0.5); padding: 30px 0; font-size: 14px; }
         
-        /* Performance Report specific */
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .btn-group { display: flex; gap: 10px; margin-top: 10px; }
         .print-btn { background: linear-gradient(135deg, #f6d365, #fda085); display: none; }
+        
+        /* Matched Admin App Cards */
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; text-align: center; }
         .stat-card h4 { font-size: 10px; color: rgba(255,255,255,0.6); text-transform: uppercase; margin-bottom: 5px; }
         .stat-card h2 { font-size: 18px; font-weight: 600; color: #fff; }
         .card-assigned h2 { color: #00d2ff; } .card-completed h2 { color: #2ed573; } .card-balance h2 { color: #ff6b6b; }
         .card-lock h2, .card-pcr h2, .card-qr h2, .card-op h2, .card-seizing h2 { color: #f6d365; }
+        
         .table-container { overflow-x: auto; background: rgba(0,0,0,0.1); border-radius: 10px; }
         table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
         th, td { padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
@@ -81,21 +85,24 @@
         .section-title { font-size: 16px; font-weight: 600; margin: 20px 0 10px 0; color: #00d2ff; text-transform: uppercase; border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 5px;}
         
         .print-header { display: none; }
+
+        /* MATCHED ADMIN APP PRINT CSS 100% */
         @media print {
             body { background: #fff; color: #000; padding: 0; margin: 0; }
-            .circle, #loginPanel, #dashboardPanel, #entryPanel, .back-icon, .btn-group { display: none !important; }
+            .circle, #loginPanel, #dashboardPanel, #entryPanel, .back-icon, .btn-group, .page-header, .form-row { display: none !important; }
             .glass-panel { background: none; border: none; box-shadow: none; padding: 0; }
             .container { max-width: 100%; gap: 0; }
             .section-title { color: #000 !important; border-bottom: 1px solid #000; margin-top: 20px; }
             .table-container { background: transparent; }
             table { border: 1px solid #000; margin-bottom: 20px; }
-            th, td { border: 1px solid #000; color: #000; padding: 6px; }
+            th, td { border: 1px solid #000; color: #000; padding: 8px; font-size: 13px;}
             th { background: #eee; }
             .cards-grid { grid-template-columns: repeat(4, 1fr); gap: 5px; }
             .stat-card { border: 1px solid #000; background: #fff; padding: 8px; }
             .stat-card h4 { color: #333; font-size: 9px; }
             .stat-card h2 { color: #000 !important; font-size: 16px; }
-            .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin: 15px 0 20px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; }
+            .print-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin: 15px 0 20px 0; font-size: 14px; text-transform: uppercase; font-weight: bold; }
+            .page-break { page-break-before: always; }
         }
     </style>
 </head>
@@ -137,15 +144,12 @@
                 </div>
                 <button class="logout-btn" onclick="logoutApp()"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
-
             <div class="options-grid">
                 <div class="option-card" onclick="showPanel('entryPanel')">
-                    <i class="fas fa-edit"></i>
-                    <h3>Report Entry</h3>
+                    <i class="fas fa-edit"></i><h3>Report Entry</h3>
                 </div>
                 <div class="option-card" onclick="showPanel('performancePanel')">
-                    <i class="fas fa-chart-line"></i>
-                    <h3>Performance Report</h3>
+                    <i class="fas fa-chart-line"></i><h3>Performance Report</h3>
                 </div>
             </div>
         </div>
@@ -156,18 +160,14 @@
                 <i class="fas fa-arrow-left back-icon" onclick="showPanel('dashboardPanel')"></i>
                 <h3>Report Entry</h3>
             </div>
-            
             <div class="input-group">
                 <label>Select Work Date (Updates will save on this date)</label>
                 <input type="date" id="workDate" required>
             </div>
-
             <div class="search-box">
                 <i class="fas fa-search"></i>
                 <input type="text" id="accSearch" placeholder="Search Account Number..." onkeyup="filterAccounts()">
             </div>
-
-            <!-- All Pending Accounts shown here -->
             <div id="accountsContainer"></div>
         </div>
 
@@ -196,16 +196,19 @@
 
             <div class="print-header" id="printHeaderMain">
                 <div style="flex:1; text-align:left;">Executive: <span id="printExecName"></span></div>
-                <div style="flex:1; text-align:center;">DAILY PERFORMANCE REPORT</div>
+                <div style="flex:1; text-align:center; font-size: 16px;">DAILY PERFORMANCE REPORT</div>
                 <div style="flex:1; text-align:right;">Date: <span id="printDateRange"></span></div>
             </div>
 
             <div id="reportContainer" style="display:none; width: 100%;">
-                <!-- REGULAR -->
+                
+                <!-- REGULAR SECTION -->
                 <div class="report-section" id="regularSection" style="display:block;">
                     <div class="section-title">REGULAR ACCOUNTS</div>
                     <div class="cards-grid">
-                        <div class="stat-card card-completed"><h4>Comp</h4><h2 id="rComp">0</h2></div>
+                        <div class="stat-card card-assigned"><h4>Assigned</h4><h2 id="rAssign">0</h2></div>
+                        <div class="stat-card card-completed"><h4>Completed</h4><h2 id="rComp">0</h2></div>
+                        <div class="stat-card card-balance"><h4>Balance</h4><h2 id="rBal">0</h2></div>
                         <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="rLock">0</h2></div>
                         <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="rPcr">0</h2></div>
                         <div class="stat-card card-qr"><h4>QR</h4><h2 id="rQr">0</h2></div>
@@ -220,11 +223,13 @@
                     </div>
                 </div>
 
-                <!-- MATURED -->
+                <!-- MATURED SECTION -->
                 <div class="report-section page-break" id="maturedSection" style="display:block; margin-top:20px;">
                     <div class="section-title" style="color: #f6d365;">MATURED ACCOUNTS</div>
                     <div class="cards-grid">
-                        <div class="stat-card card-completed"><h4>Comp</h4><h2 id="mComp">0</h2></div>
+                        <div class="stat-card card-assigned"><h4>Assigned</h4><h2 id="mAssign">0</h2></div>
+                        <div class="stat-card card-completed"><h4>Completed</h4><h2 id="mComp">0</h2></div>
+                        <div class="stat-card card-balance"><h4>Balance</h4><h2 id="mBal">0</h2></div>
                         <div class="stat-card card-lock"><h4>LOCK</h4><h2 id="mLock">0</h2></div>
                         <div class="stat-card card-pcr"><h4>PCR</h4><h2 id="mPcr">0</h2></div>
                         <div class="stat-card card-qr"><h4>QR</h4><h2 id="mQr">0</h2></div>
@@ -238,9 +243,9 @@
                         </table>
                     </div>
                 </div>
+
             </div>
         </div>
-
     </div>
 
     <script>
@@ -263,7 +268,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Login Logics
         db.ref('branches').once('value').then((snapshot) => {
             const b = document.getElementById('loginBranch');
             b.innerHTML = '<option value="">-- Select Branch --</option>'; 
@@ -310,7 +314,7 @@
             ['loginPanel', 'dashboardPanel', 'entryPanel', 'performancePanel'].forEach(id => {
                 document.getElementById(id).style.display = (id === panelId) ? 'block' : 'none';
             });
-            if(panelId === 'entryPanel') loadPendingAccounts(); // Load NO Date Filter
+            if(panelId === 'entryPanel') loadPendingAccounts();
         }
         function logoutApp() {
             if(confirm("Logout?")) {
@@ -321,7 +325,6 @@
             }
         }
 
-        // --- REPORT ENTRY (Fetch All Pending regardless of assigned date) ---
         function loadPendingAccounts() {
             const container = document.getElementById('accountsContainer');
             container.innerHTML = '<div class="no-data"><i class="fas fa-spinner fa-spin"></i> Loading All Pending...</div>';
@@ -332,7 +335,6 @@
                 if (data) {
                     for (let key in data) {
                         let item = data[key];
-                        // Filter ONLY by Exec, Branch, and Pending status (Ignore item.date)
                         if (item.branch === currentBranch && item.executive === currentExec && (!item.status || item.status === "Pending")) {
                             count++;
                             let dType = item.type === 'MATURED' ? `MATURED (${item.maturedYear})` : 'REGULAR';
@@ -360,11 +362,10 @@
             });
         }
 
-        // --- SUBMIT ACCOUNT: Update status, amount AND `updatedDate` ---
         window.updateEntry = function(key) {
             const st = document.getElementById(`status_${key}`).value;
             const amt = document.getElementById(`amt_${key}`).value.trim();
-            const uDate = document.getElementById('workDate').value; // Save as this date
+            const uDate = document.getElementById('workDate').value; 
             const btn = document.getElementById(`btn_${key}`);
             
             if(!st || !amt) return alert("Select Status and enter Amount!");
@@ -373,13 +374,12 @@
             db.ref('assigned_accounts/' + key).update({ 
                 status: st, 
                 collectedAmount: amt,
-                updatedDate: uDate // <--- Kotha field added here
+                updatedDate: uDate 
             }).then(() => {
                 document.getElementById(`card_${key}`).style.display = 'none';
             }).catch(e => { alert("Error: " + e.message); btn.innerHTML = 'Submit'; });
         };
 
-        // --- EMPLOYEE PERFORMANCE REPORT (Filter based on `updatedDate`) ---
         function formatDate(dStr) { if(!dStr)return""; let p = dStr.split('-'); return `${p[2]}-${p[1]}-${p[0]}`; }
 
         function fetchPerformance() {
@@ -390,24 +390,29 @@
 
             db.ref('assigned_accounts').once('value').then((snapshot) => {
                 const data = snapshot.val();
-                let rCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0; let rHtml = '';
-                let mCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0; let mHtml = '';
+                let rAs = 0, rCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0; let rHtml = '';
+                let mAs = 0, mCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0; let mHtml = '';
 
                 if(data) {
                     for(let k in data) {
                         let i = data[k];
-                        // check matching Exec, Branch, and UPDATED DATE range
-                        if(i.branch === currentBranch && i.executive === currentExec && i.updatedDate >= fDate && i.updatedDate <= tDate && i.status && i.status !== "Pending") {
+                        if(i.branch === currentBranch && i.executive === currentExec) {
                             
-                            let dAmt = i.collectedAmount || 0;
-                            
-                            if(i.type === 'REGULAR') {
-                                rCo++; if(i.status==='LOCK')rL++; else if(i.status==='PCR')rP++; else if(i.status==='QR')rQ++; else if(i.status==='OP')rO++; else if(i.status==='SEIZING')rS++;
-                                rHtml += `<tr><td>${rCo}</td><td>REGULAR</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
-                            } 
-                            else if (i.type === 'MATURED') {
-                                mCo++; if(i.status==='LOCK')mL++; else if(i.status==='PCR')mP++; else if(i.status==='QR')mQ++; else if(i.status==='OP')mO++; else if(i.status==='SEIZING')mS++;
-                                mHtml += `<tr><td>${mCo}</td><td>MATURED (${i.maturedYear})</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
+                            // 1. Assign: Increment for all accounts
+                            if (i.type === 'REGULAR') rAs++;
+                            else if (i.type === 'MATURED') mAs++;
+
+                            // 2. Completed: Only if updated in the date range
+                            if(i.updatedDate >= fDate && i.updatedDate <= tDate && i.status && i.status !== "Pending") {
+                                let dAmt = i.collectedAmount || 0;
+                                if(i.type === 'REGULAR') {
+                                    rCo++; if(i.status==='LOCK')rL++; else if(i.status==='PCR')rP++; else if(i.status==='QR')rQ++; else if(i.status==='OP')rO++; else if(i.status==='SEIZING')rS++;
+                                    rHtml += `<tr><td>${rCo}</td><td>REGULAR</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
+                                } 
+                                else if (i.type === 'MATURED') {
+                                    mCo++; if(i.status==='LOCK')mL++; else if(i.status==='PCR')mP++; else if(i.status==='QR')mQ++; else if(i.status==='OP')mO++; else if(i.status==='SEIZING')mS++;
+                                    mHtml += `<tr><td>${mCo}</td><td>MATURED (${i.maturedYear})</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
+                                }
                             }
                         }
                     }
@@ -416,24 +421,28 @@
                 document.getElementById('printDateRange').innerText = (fDate === tDate) ? formatDate(fDate) : `${formatDate(fDate)} to ${formatDate(tDate)}`;
 
                 // Update Reg
+                document.getElementById('rAssign').innerText = rAs; 
                 document.getElementById('rComp').innerText = rCo; 
+                document.getElementById('rBal').innerText = (rAs - rCo);
                 document.getElementById('rLock').innerText = rL; document.getElementById('rPcr').innerText = rP; document.getElementById('rQr').innerText = rQ; document.getElementById('rOp').innerText = rO; document.getElementById('rSeize').innerText = rS;
                 document.getElementById('regTableBody').innerHTML = rHtml;
-                document.getElementById('regularSection').style.display = rCo > 0 ? 'block' : 'none';
+                document.getElementById('regularSection').style.display = (rAs > 0 || rCo > 0) ? 'block' : 'none';
 
                 // Update Mat
+                document.getElementById('mAssign').innerText = mAs; 
                 document.getElementById('mComp').innerText = mCo; 
+                document.getElementById('mBal').innerText = (mAs - mCo);
                 document.getElementById('mLock').innerText = mL; document.getElementById('mPcr').innerText = mP; document.getElementById('mQr').innerText = mQ; document.getElementById('mOp').innerText = mO; document.getElementById('mSeize').innerText = mS;
                 document.getElementById('matTableBody').innerHTML = mHtml;
-                document.getElementById('maturedSection').style.display = mCo > 0 ? 'block' : 'none';
+                document.getElementById('maturedSection').style.display = (mAs > 0 || mCo > 0) ? 'block' : 'none';
 
-                if(rCo > 0 || mCo > 0) {
+                if((rAs > 0 || rCo > 0) || (mAs > 0 || mCo > 0)) {
                     document.getElementById('reportContainer').style.display = 'block';
                     document.getElementById('printBtn').style.display = 'block';
                 } else {
                     document.getElementById('reportContainer').style.display = 'none';
                     document.getElementById('printBtn').style.display = 'none';
-                    alert("No completed accounts found in this date range.");
+                    alert("No data found!");
                 }
                 btn.innerHTML = '<i class="fas fa-search"></i> Search';
             });
