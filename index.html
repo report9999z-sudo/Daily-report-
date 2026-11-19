@@ -68,7 +68,6 @@
         .btn-group { display: flex; gap: 10px; margin-top: 10px; }
         .print-btn { background: linear-gradient(135deg, #f6d365, #fda085); display: none; }
         
-        /* Copy WhatsApp Button */
         .copy-btn { background: linear-gradient(135deg, #25D366, #128C7E); display: none; }
         .copy-btn:hover { box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4); }
 
@@ -324,7 +323,7 @@
         document.getElementById('empAssignDate').value = today;
 
         let currentExec = ""; let currentBranch = "";
-        let whatsappReportString = ""; // Global variable to store text report
+        let whatsappReportString = "";
 
         const currentYear = new Date().getFullYear();
         const matYearSelect = document.getElementById('empMaturedYear');
@@ -563,17 +562,17 @@
             const fDate = document.getElementById('fromDate').value; const tDate = document.getElementById('toDate').value;
             const btn = document.getElementById('searchPerfBtn'); btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
-            // Set Dynamic File Name for Print PDF
             document.title = currentExec.toUpperCase() + " - PERFORMANCE REPORT";
 
             db.ref('assigned_accounts').once('value').then((snapshot) => {
                 const data = snapshot.val();
                 
-                let rAs = 0, rPending = 0; let mAs = 0, mPending = 0;
-                let rCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0; let rHtml = '';
-                let mCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0; let mHtml = '';
+                let rAs = 0, rTotalComp = 0, rPending = 0; 
+                let mAs = 0, mTotalComp = 0, mPending = 0;
+                
+                let rTodayCo = 0, rL = 0, rP = 0, rQ = 0, rO = 0, rS = 0; let rHtml = '';
+                let mTodayCo = 0, mL = 0, mP = 0, mQ = 0, mO = 0, mS = 0; let mHtml = '';
 
-                // Lists for WhatsApp Report
                 let lockItems = [], pcrItems = [], qrItems = [], opItems = [], seizeItems = [];
                 let lockAmt = 0, pcrAmt = 0, qrAmt = 0, opAmt = 0;
 
@@ -583,9 +582,13 @@
                         if(i.branch === currentBranch && i.executive === currentExec) {
                             
                             if(i.type === 'REGULAR') {
-                                rAs++; if (!i.status || i.status === "Pending") rPending++;
+                                rAs++; 
+                                if (!i.status || i.status === "Pending") rPending++;
+                                else rTotalComp++;
                             } else if (i.type === 'MATURED') {
-                                mAs++; if (!i.status || i.status === "Pending") mPending++;
+                                mAs++; 
+                                if (!i.status || i.status === "Pending") mPending++;
+                                else mTotalComp++;
                             }
 
                             if(i.updatedDate >= fDate && i.updatedDate <= tDate && i.status && i.status !== "Pending") {
@@ -593,22 +596,22 @@
                                 let typeStr = i.type === 'REGULAR' ? 'Regular' : 'Matured';
 
                                 if(i.type === 'REGULAR') {
-                                    rCo++; 
+                                    rTodayCo++; 
                                     if(i.status==='LOCK') { rL++; lockItems.push(`• ${i.accountNumber} - ₹${dAmt} (${typeStr})`); lockAmt+=dAmt; }
                                     else if(i.status==='PCR') { rP++; pcrItems.push(`• ${i.accountNumber} - ₹${dAmt} (${typeStr})`); pcrAmt+=dAmt; }
                                     else if(i.status==='QR') { rQ++; qrItems.push(`• ${i.accountNumber} - ₹${dAmt} (${typeStr})`); qrAmt+=dAmt; }
                                     else if(i.status==='OP') { rO++; opItems.push(`• ${i.accountNumber} - ₹${dAmt} (${typeStr})`); opAmt+=dAmt; }
                                     else if(i.status==='SEIZING') { rS++; seizeItems.push(`• ${i.accountNumber} (${typeStr})`); }
-                                    rHtml += `<tr><td>${rCo}</td><td>REGULAR</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
+                                    rHtml += `<tr><td>${rTodayCo}</td><td>REGULAR</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
                                 } 
                                 else if (i.type === 'MATURED') {
-                                    mCo++; 
+                                    mTodayCo++; 
                                     if(i.status==='LOCK') { mL++; lockItems.push(`• ${i.accountNumber} - ₹${dAmt} (${typeStr})`); lockAmt+=dAmt; }
                                     else if(i.status==='PCR') { mP++; pcrItems.push(`• ${i.accountNumber} - ₹${dAmt} (${typeStr})`); pcrAmt+=dAmt; }
                                     else if(i.status==='QR') { mQ++; qrItems.push(`• ${i.accountNumber} - ₹${dAmt} (${typeStr})`); qrAmt+=dAmt; }
                                     else if(i.status==='OP') { mO++; opItems.push(`• ${i.accountNumber} - ₹${dAmt} (${typeStr})`); opAmt+=dAmt; }
                                     else if(i.status==='SEIZING') { mS++; seizeItems.push(`• ${i.accountNumber} (${typeStr})`); }
-                                    mHtml += `<tr><td>${mCo}</td><td>MATURED (${i.maturedYear})</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
+                                    mHtml += `<tr><td>${mTodayCo}</td><td>MATURED (${i.maturedYear})</td><td>${i.accountNumber}</td><td>${i.ins}</td><td><span class="status-badge">${i.status}</span></td><td>₹ ${dAmt}</td></tr>`;
                                 }
                             }
                         }
@@ -618,31 +621,31 @@
                 let dRange = (fDate === tDate) ? formatDate(fDate) : `${formatDate(fDate)} to ${formatDate(tDate)}`;
                 document.getElementById('printDateRangePerf').innerText = dRange;
 
-                // Set Performance Cards
-                document.getElementById('perfRAssign').innerText = rAs; document.getElementById('perfRBal').innerText = rPending;
-                document.getElementById('rComp').innerText = rCo; 
+                document.getElementById('perfRAssign').innerText = rAs; 
+                document.getElementById('rComp').innerText = rTotalComp; 
+                document.getElementById('perfRBal').innerText = rPending;
                 document.getElementById('rLock').innerText = rL; document.getElementById('rPcr').innerText = rP; document.getElementById('rQr').innerText = rQ; document.getElementById('rOp').innerText = rO; document.getElementById('rSeize').innerText = rS;
                 document.getElementById('regTableBody').innerHTML = rHtml;
-                document.getElementById('perfRegularSection').style.display = (rAs > 0 || rCo > 0) ? 'block' : 'none';
+                document.getElementById('perfRegularSection').style.display = (rAs > 0 || rTodayCo > 0) ? 'block' : 'none';
 
-                document.getElementById('perfMAssign').innerText = mAs; document.getElementById('perfMBal').innerText = mPending;
-                document.getElementById('mComp').innerText = mCo; 
+                document.getElementById('perfMAssign').innerText = mAs; 
+                document.getElementById('mComp').innerText = mTotalComp; 
+                document.getElementById('perfMBal').innerText = mPending;
                 document.getElementById('mLock').innerText = mL; document.getElementById('mPcr').innerText = mP; document.getElementById('mQr').innerText = mQ; document.getElementById('mOp').innerText = mO; document.getElementById('mSeize').innerText = mS;
                 document.getElementById('matTableBody').innerHTML = mHtml;
-                document.getElementById('perfMaturedSection').style.display = (mAs > 0 || mCo > 0) ? 'block' : 'none';
+                document.getElementById('perfMaturedSection').style.display = (mAs > 0 || mTodayCo > 0) ? 'block' : 'none';
 
-                if((rAs > 0 || rCo > 0) || (mAs > 0 || mCo > 0)) { 
+                if((rAs > 0 || rTodayCo > 0) || (mAs > 0 || mTodayCo > 0)) { 
                     document.getElementById('perfReportContainer').style.display = 'block'; 
                     document.getElementById('printPerfBtn').style.display = 'block'; 
                     document.getElementById('copyPerfBtn').style.display = 'block'; 
 
-                    // Construct WhatsApp String
                     let waText = `🏢 *SRI VISHNU PRIYA FINANCE*\n`;
                     waText += `📅 *Date:* ${dRange}\n`;
                     waText += `👤 *Executive:* ${currentExec.toUpperCase()}\n\n`;
 
                     waText += `📊 *--- DAILY SUMMARY ---* 📊\n`;
-                    waText += `Assigned: ${rAs + mAs} | Completed: ${rCo + mCo} | Balance: ${rPending + mPending}\n\n`;
+                    waText += `Assigned: ${rAs + mAs} | Completed: ${rTotalComp + mTotalComp} | Balance: ${rPending + mPending}\n\n`;
 
                     waText += `LOCK: ${rL + mL} | PCR: ${rP + mP}\n`;
                     waText += `QR: ${rQ + mQ} | OTHERS: ${rO + mO}\n`;
